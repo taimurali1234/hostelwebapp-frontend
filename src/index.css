@@ -1,0 +1,41 @@
+@import "tailwindcss";
+
+@theme {
+  --color-sidebar: #E8F1FD;
+  --color-surface: #FFFFFF;
+  --color-text-primary: #1F2937;
+  --color-text-secondary: #4B5563;
+}
+
+/* Hide scrollbar but keep scroll working */
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* IE & Edge */
+  scrollbar-width: 1px;     /* Firefox */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: block;             /* Chrome, Safari */
+}
+
+/* ===== Thin Scrollbar (Cross-Browser) ===== */
+
+/* Chrome, Edge, Safari */
+.thin-scrollbar::-webkit-scrollbar {
+  width: 1px;          /* thickness */
+}
+
+.thin-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.thin-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.25);
+  border-radius: 999px;
+}
+
+/* Firefox */
+.thin-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.25) transparent;
+}
+
