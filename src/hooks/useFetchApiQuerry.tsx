@@ -28,7 +28,10 @@ export function usePaginatedQuery<T>(
     queryFn: async ({ signal }) => {
       const res = await fetch(
         `${API_BASE_URL}${queryString}`,
-        { signal }
+        { 
+          signal,
+          credentials: 'include'
+        }
       );
 
       if (!res.ok) throw new Error("Fetch failed");
@@ -65,7 +68,10 @@ export function useSingleQuery<T>(
     queryFn: async ({ signal }) => {
       const res = await fetch(
         `${API_BASE_URL}${endpoint}/${id}`,
-        { signal }
+        { 
+          signal,
+          credentials: 'include'
+        }
       );
 
       if (!res.ok) throw new Error("Fetch failed");
@@ -94,6 +100,7 @@ export function useUpdateMutation<T>(
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
+          credentials: 'include',
           body: JSON.stringify(data),
         }
       );
@@ -131,6 +138,7 @@ export function useDeleteMutation(
         `${API_BASE_URL}${endpoint}/${id}`,
         {
           method: "DELETE",
+          credentials: 'include'
         }
       );
       const result = await res.json()

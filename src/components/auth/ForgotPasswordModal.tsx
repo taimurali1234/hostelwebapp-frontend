@@ -51,7 +51,7 @@ export default function ForgotPasswordModal({
         toast.error(data.message || "Failed to send reset email");
       }
     } catch (error) {
-      console.error(error);
+
       toast.error("Failed to send reset email");
     } finally {
       setLoading(false);

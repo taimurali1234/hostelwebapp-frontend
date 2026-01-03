@@ -4,7 +4,6 @@ import NotificationsHeader from "../../components/admin/Notifications/Notificati
 import { NotificationsFilters } from "../../components/admin/Notifications/NotificationFilter";
 import {
   NotificationsRow,
-  type NotificationRowType,
 } from "../../components/admin/Notifications/NotificationRow";
 import { TableHeader } from "../../components/common/TableHeader";
 import { TableCellLoader } from "../../components/common/Loader";
@@ -86,14 +85,6 @@ export default function Notifications() {
 
   const notifications = data?.items ?? [];
   const total = data?.total ?? 0;
-
-  /* =====================
-     CREATE NOTIFICATION
-  ====================== */
-  const handleCreateClick = () => {
-    setSelectedNotification(undefined);
-    setCreateModalOpen(true);
-  };
 
   const handleCreateSubmit = (formData: CreateNotificationForm) => {
     createMutation.mutate(formData, {
@@ -184,7 +175,7 @@ export default function Notifications() {
   return (
     <AdminLayout>
       <div className="bg-surface">
-        <NotificationsHeader onCreateClick={handleCreateClick} />
+        <NotificationsHeader  />
 
         <h2 className="text-lg font-semibold mb-2">
           Showing {total} notifications
@@ -226,9 +217,9 @@ export default function Notifications() {
                   </td>
                 </tr>
               ) : (
-                notifications.map((n) => (
+                notifications.map((n, idx) => (
                   <NotificationsRow
-                    key={n.id || Math.random()}
+                    key={n.id || `notification-${idx}`}
                     notification={n}
                     onEdit={handleEditClick}
                     onDelete={handleDelete}

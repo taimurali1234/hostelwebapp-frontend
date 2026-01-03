@@ -11,7 +11,7 @@ import Payments from "../Pages/admin/Payments";
 import Analytics from "../Pages/admin/Analytics";
 import Login from "../Pages/users/Login";
 import Signup from "../Pages/users/Signup";
-import ResetPassword from "../Pages/users/ResetPassword";
+import ResetPassword from "../components/auth/ResetPassword";
 
 
 

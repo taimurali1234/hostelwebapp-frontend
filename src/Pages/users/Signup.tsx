@@ -104,9 +104,7 @@ export default function Signup() {
 
       setSuccess("Registration successful! Please check your email to verify.");
       setForm({ name: "", email: "", password: "", phone: "", address: "" });
-      localStorage.setItem("user", JSON.stringify(data.data));
-      localStorage.setItem("token", data.data.userId);
-      localStorage.setItem("role", data.data.role);
+     
       // Redirect to login after 2 seconds
       setTimeout(() => {
         window.location.href = "/login";
@@ -121,7 +119,6 @@ export default function Signup() {
         setFieldErrors(errors);
       } else {
         setGeneralError("An error occurred. Please try again.");
-        console.error(err);
       }
     } finally {
       setLoading(false);

@@ -44,21 +44,21 @@ export function NotificationsRow({
 
   return (
     <tr className="border-b last:border-none hover:bg-gray-50">
-      <td className="px-6 py-4 font-medium">
-        {notification.title || "-"}
+      <td className="px-4 py-3 font-medium whitespace-nowrap">
+        {notification.title ? notification.title.substring(0, 15) : "-"}
       </td>
 
-      <td className="px-6 py-4 text-gray-600 max-w-sm truncate">
+      <td className="px-4 py-3 text-gray-600 max-w-xs truncate">
         {notification.message}
       </td>
 
-      <td className="px-6 py-4 text-gray-600">
+      <td className="px-4 py-3 text-gray-600 whitespace-nowrap">
         {getAudienceLabel(notification.audience)}
       </td>
 
-      <td className="px-6 py-4">
+      <td className="px-4 py-3 whitespace-nowrap">
         <span
-          className={`text-sm font-medium px-2 py-1 rounded ${
+          className={`text-xs font-medium px-2 py-1 rounded ${
             notification.severity === "ERROR"
               ? "text-red-600 bg-red-50"
               : notification.severity === "WARNING"
@@ -72,9 +72,9 @@ export function NotificationsRow({
         </span>
       </td>
 
-      <td className="px-6 py-4">
+      <td className="px-4 py-3 whitespace-nowrap">
         <span
-          className={`text-sm font-medium px-2 py-1 rounded ${
+          className={`text-xs font-medium px-2 py-1 rounded ${
             notification.isRead
               ? "text-gray-600 bg-gray-100"
               : "text-green-600 bg-green-50"
@@ -84,20 +84,20 @@ export function NotificationsRow({
         </span>
       </td>
 
-      <td className="px-6 py-4 text-gray-600 text-sm">
+      <td className="px-4 py-3 text-gray-600 text-xs whitespace-nowrap">
         {formatDate(notification.createdAt)}
       </td>
 
       {/* Actions */}
-      <td className="px-6 py-4">
-        <div className="flex gap-3">
+      <td className="px-4 py-3 whitespace-nowrap">
+        <div className="flex gap-2">
           {onEdit && notification.id && (
             <button
               onClick={() => onEdit(notification.id!)}
               className="text-blue-600 hover:text-blue-800 transition"
               title="Edit notification"
             >
-              <Edit2 size={18} />
+              <Edit2 size={16} />
             </button>
           )}
           {onDelete && notification.id && (
@@ -106,7 +106,7 @@ export function NotificationsRow({
               className="text-red-600 hover:text-red-800 transition"
               title="Delete notification"
             >
-              <Trash2 size={18} />
+              <Trash2 size={16} />
             </button>
           )}
         </div>

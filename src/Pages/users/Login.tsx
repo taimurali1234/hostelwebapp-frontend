@@ -57,6 +57,7 @@ export default function Login() {
     const response = await fetch("http://localhost:3000/api/users/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: 'include',
       body: JSON.stringify(validatedData),
     });
 
@@ -78,6 +79,8 @@ export default function Login() {
     }
 
     setSuccess("Login successful! Redirecting...");
+     localStorage.setItem("user", JSON.stringify(data.data));
+      localStorage.setItem("role", data.data.role);
 
     setTimeout(() => {
       if (data?.data?.role === "ADMIN" || data?.data?.role === "COORDINATOR") {
@@ -92,7 +95,6 @@ export default function Login() {
     if (err instanceof z.ZodError) {
       setError(err.issues[0]?.message || "Invalid input");
     } else {
-      console.error(err);
       setError("An unexpected error occurred. Please try again.");
     }
   } finally {
