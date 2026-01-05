@@ -3,6 +3,7 @@ import routes from "./routes/AppRoutes";
 import {  type ComponentType } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { AuthProvider } from "./context/AuthContext";
 
 export interface RouteType {
   path: string;
@@ -50,7 +51,9 @@ const AppContent = () => {
 function App() {
   return (
     <Router>
-      <AppContent />
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
     </Router>
   );
 }

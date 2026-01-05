@@ -31,15 +31,27 @@ export default function Analytics() {
   useEffect(() => {
     fetch(`${API}/api/analytics/revenue?range=${range}`)
       .then((r) => r.json())
-      .then(setRevenue);
+      .then((json) => {
+        // Handle backend response structure: { success, message, data: {...} }
+        const data = json.data ?? json;
+        setRevenue(data);
+      });
 
     fetch(`${API}/api/analytics/bookings?range=${range}`)
       .then((r) => r.json())
-      .then(setBookings);
+      .then((json) => {
+        // Handle backend response structure: { success, message, data: {...} }
+        const data = json.data ?? json;
+        setBookings(data);
+      });
 
     fetch(`${API}/api/analytics/compare?range=${range}`)
       .then((r) => r.json())
-      .then(setComparison);
+      .then((json) => {
+        // Handle backend response structure: { success, message, data: {...} }
+        const data = json.data ?? json;
+        setComparison(data);
+      });
   }, [range]);
 
   return (

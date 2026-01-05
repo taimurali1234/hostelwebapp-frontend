@@ -11,10 +11,10 @@ const ProtectedRoute = ({
   allowedRoles = ["ADMIN", "COORDINATOR"] // Default: only admin and coordinator can access admin routes
 }: ProtectedRouteProps) => {
   const userData = localStorage.getItem("user");
-  const role = localStorage.getItem("role");
+  const role = userData ? JSON.parse(userData).role : null;
 
   // Check if user is authenticated
-  if (!userData || !role) {
+  if (!userData && role === null) {
     return <Navigate to="/login" />;
   }
 

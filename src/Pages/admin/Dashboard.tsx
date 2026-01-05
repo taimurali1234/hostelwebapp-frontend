@@ -20,8 +20,10 @@ export default function Dashboard() {
         const res = await fetch(`${API}/api/dashboard/`, {
           credentials: "include",
         });
-        const json: DashboardData = await res.json();
-        setData(json);
+        const json = await res.json();
+        // Handle backend response structure: { success, message, data: {...} }
+        const dashboardData = json.data ?? json;
+        setData(dashboardData as DashboardData);
       } catch (err) {
         console.error("Dashboard fetch failed", err);
       } finally {

@@ -38,11 +38,14 @@ export function usePaginatedQuery<T>(
 
       const json = await res.json();
 
+      // Handle backend response structure: { success, message, data: {...} }
+      const responseData = json.data ?? json;
+
       return {
-        items: json[itemsKey] ?? [],
-        total: json.total ?? 0,
-        page: json.page ?? 1,
-        limit: json.limit ?? 10,
+        items: responseData[itemsKey] ?? [],
+        total: responseData.total ?? 0,
+        page: responseData.page ?? 1,
+        limit: responseData.limit ?? 10,
       };
     },
 
@@ -75,7 +78,10 @@ export function useSingleQuery<T>(
       );
 
       if (!res.ok) throw new Error("Fetch failed");
-      return res.json();
+      const json = await res.json();
+      
+      // Handle backend response structure: { success, message, data: {...} }
+      return json.data ?? json;
     },
   });
 }

@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { Mail, Lock, Eye, EyeOff, Loader } from "lucide-react";
 import { z } from "zod";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import ForgotPasswordModal from "../../components/auth/ForgotPasswordModal";
 
 // Zod validation schema
@@ -12,6 +14,10 @@ const LoginSchema = z.object({
 type LoginDTO = z.infer<typeof LoginSchema>;
 
 export default function Login() {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const { login } = useAuth();
+
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -28,80 +34,69 @@ export default function Login() {
   const [resendLoading, setResendLoading] = useState(false);
   const [toast, setToast] = useState("");
 
-  // Check for verification success from URL
+  // Check for verification success from URL or session expiration
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get("verified") === "true") {
+    if (searchParams.get("verified") === "true") {
       setSuccess("✅ Email verified successfully! You can now login.");
       setToast("✅ You are verified now. You can login!");
-      // Clear URL params
       window.history.replaceState({}, document.title, window.location.pathname);
       setTimeout(() => setToast(""), 3000);
     }
-  }, []);
+
+    if (searchParams.get("session") === "expired") {
+      setError("❌ Your session has expired. Please login again.");
+      setToast("Session expired. Please login again.");
+      setTimeout(() => setToast(""), 3000);
+    }
+  }, [searchParams]);
 
   const handleLogin = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setError("");
-  setSuccess("");
+    e.preventDefault();
+    setError("");
+    setSuccess("");
 
-  try {
-    // ✅ Zod validation
-    const validatedData: LoginDTO = LoginSchema.parse({
-      email: form.email,
-      password: form.password,
-    });
+    try {
+      // ✅ Zod validation
+      const validatedData: LoginDTO = LoginSchema.parse({
+        email: form.email,
+        password: form.password,
+      });
 
-    setLoading(true);
+      setLoading(true);
 
-    const response = await fetch("http://localhost:3000/api/users/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: 'include',
-      body: JSON.stringify(validatedData),
-    });
+      // Use the auth context login function
+      await login(validatedData.email, validatedData.password);
 
-    const data = await response.json().catch(() => ({}));
+      setSuccess("Login successful! Redirecting...");
 
-    if (!response.ok) {
-      // Unverified email case
-      if (response.status === 403 && data?.message?.toLowerCase().includes("verify")) {
+      // Get user info from localStorage
+      const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+      setTimeout(() => {
+        if (user?.role === "ADMIN" || user?.role === "COORDINATOR") {
+          navigate("/admin/dashboard");
+        } else {
+          navigate("/");
+        }
+      }, 1500);
+    } catch (err: any) {
+      // ✅ FIXED ZOD ERROR HANDLING
+      if (err instanceof z.ZodError) {
+        setError(err.issues[0]?.message || "Invalid input");
+      } else if (err?.message?.toLowerCase().includes("verify")) {
+        // Unverified email case
         setError(
           "You are not verified. Please check your email and click the verification link."
         );
         setResendEmail(form.email);
         setShowResendModal(true);
-        return;
-      }
-
-      setError(data.message || "Login failed");
-      return;
-    }
-
-    setSuccess("Login successful! Redirecting...");
-     localStorage.setItem("user", JSON.stringify(data.data));
-      localStorage.setItem("role", data.data.role);
-
-    setTimeout(() => {
-      if (data?.data?.role === "ADMIN" || data?.data?.role === "COORDINATOR") {
-        window.location.href = "/admin/dashboard";
       } else {
-        window.location.href = "/";
+        setError(err?.message || "Login failed. Please try again.");
       }
-    }, 1500);
-
-  } catch (err) {
-    // ✅ FIXED ZOD ERROR HANDLING
-    if (err instanceof z.ZodError) {
-      setError(err.issues[0]?.message || "Invalid input");
-    } else {
-      setError("An unexpected error occurred. Please try again.");
+    } finally {
+      setLoading(false);
     }
-  } finally {
-    setLoading(false);
-  }
-};
-
+  };
 
   const handleResendVerification = async () => {
     if (!resendEmail) {
@@ -130,7 +125,7 @@ export default function Login() {
       setSuccess("Verification link sent! Please check your email.");
       setToast("✉️ Verification link resent to your email!");
       setShowResendModal(false);
-      
+
       setTimeout(() => {
         setSuccess("");
         setToast("");

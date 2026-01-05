@@ -57,12 +57,13 @@ export function NotificationsFilters({
             className="bg-gray-100 px-4 py-2 rounded-lg border text-sm"
           >
             <option value="">All Audience</option>
-            <option value="ALL">All Users</option>
+            <option value="ALL_USERS">All Users</option>
+            <option value="ADMIN">Admin</option>
             <option value="USER">Specific User</option>
           </select>
 
           {/* Severity */}
-          <select
+          {/* <select
             value={filters.severity}
             onChange={(e) =>
               onChange("severity", e.target.value)
@@ -74,7 +75,7 @@ export function NotificationsFilters({
             <option value="SUCCESS">Success</option>
             <option value="WARNING">Warning</option>
             <option value="ERROR">Error</option>
-          </select>
+          </select> */}
 
           {/* Read */}
           <select

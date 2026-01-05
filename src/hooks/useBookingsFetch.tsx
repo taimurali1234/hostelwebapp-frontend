@@ -112,10 +112,13 @@ export function useBookings(filters: BookingsFilters) {
 
       if (!res.ok) throw new Error("Failed to fetch bookings");
 
-      const data = await res.json();
+      const json = await res.json();
 
-      // Handle array response from backend
-      const bookings = Array.isArray(data) ? data : data.bookings || data.items || [];
+      // Handle backend response structure: { success, message, data: {...} }
+      const responseData = json.data ?? json;
+      
+      // Handle array or object response from backend
+      const bookings = Array.isArray(responseData) ? responseData : responseData.bookings || responseData.items || [];
       
       // Transform bookings to match BookingRowType
       const transformedBookings = bookings.map((booking: BackendBooking) =>

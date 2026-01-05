@@ -198,7 +198,7 @@ export default function Notifications() {
           }}
         />
 
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto max-h-[250px] overflow-y-auto  rounded-lg">
           <table className="w-full text-sm">
             <TableHeader columns={columns} />
             <tbody>
