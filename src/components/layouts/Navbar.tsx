@@ -1,16 +1,30 @@
 
 import { useState, useRef, useEffect } from "react";
 import { IoIosNotificationsOutline } from "react-icons/io";
-import { useAuth, logout } from "../../hooks/useAuth";
+import { logout } from "../../services/authService";
+import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router";
 
 
 export default function Navbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const { user } = useAuth();
   const dropdownRef = useRef<HTMLDivElement>(null);
+    const { user, setUser } = useAuth();
+      const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();
+
+
+  const handleLogout = async () => {
+    try{
+   await  logout();
+
+    }
+    catch (err) {
+      console.error("Logout failed", err);
+    } finally {
+      setUser(null);               // frontend: clear user + localStorage
+      navigate("/login");
+    }
   };
 
   // Close dropdown when clicking outside

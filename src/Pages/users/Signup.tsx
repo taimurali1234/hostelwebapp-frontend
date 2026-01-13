@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { User, Mail, Lock, Eye, EyeOff, MapPin, Loader, Phone } from "lucide-react";
 import { z } from "zod";
+import { register } from "../../services/authService";
 
 // Zod validation schema matching backend
 const RegisterUserSchema = z.object({
@@ -70,61 +71,61 @@ export default function Signup() {
   };
 
   const handleSignup = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setGeneralError("");
-    setFieldErrors({});
-    setSuccess("");
+  e.preventDefault();
+  setGeneralError("");
+  setFieldErrors({});
+  setSuccess("");
 
-    // Zod validation
-    try {
-      const validatedData: RegisterUserDTO = RegisterUserSchema.parse({
-        name: form.name,
-        email: form.email,
-        password: form.password,
-        phone: form.phone,
-        address: form.address,
+  try {
+    // ✅ Zod validation
+    const validatedData: RegisterUserDTO = RegisterUserSchema.parse({
+      name: form.name,
+      email: form.email,
+      password: form.password,
+      phone: form.phone,
+      address: form.address,
+    });
+
+    setLoading(true);
+
+    // ✅ USE AUTH SERVICE (axios + interceptor)
+    const response = await register(validatedData);
+
+    setSuccess(
+      response?.message ||
+        "Registration successful! Please check your email to verify."
+    );
+
+    setForm({
+      name: "",
+      email: "",
+      password: "",
+      phone: "",
+      address: "",
+    });
+
+    // Redirect to login after 2 seconds
+    setTimeout(() => {
+      window.location.href = "/login";
+    }, 2000);
+  } catch (err: any) {
+    if (err?.errors) {
+      // backend validation errors (optional)
+      setGeneralError(err.message || "Registration failed");
+    } else if (err instanceof z.ZodError) {
+      const errors: Record<string, string> = {};
+      err.issues.forEach((issue) => {
+        const path = issue.path[0] as string;
+        errors[path] = issue.message;
       });
-
-      setLoading(true);
-
-      const response = await fetch("http://localhost:3000/api/users/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(validatedData),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        setGeneralError(data.message || "Registration failed");
-        return;
-      }
-
-      setSuccess("Registration successful! Please check your email to verify.");
-      setForm({ name: "", email: "", password: "", phone: "", address: "" });
-     
-      // Redirect to login after 2 seconds
-      setTimeout(() => {
-        window.location.href = "/login";
-      }, 2000);
-    } catch (err) {
-      if (err instanceof z.ZodError) {
-        const errors: Record<string, string> = {};
-        err.issues.forEach((issue) => {
-          const path = issue.path[0] as string;
-          errors[path] = issue.message;
-        });
-        setFieldErrors(errors);
-      } else {
-        setGeneralError("An error occurred. Please try again.");
-      }
-    } finally {
-      setLoading(false);
+      setFieldErrors(errors);
+    } else {
+      setGeneralError(err?.message || "An error occurred. Please try again.");
     }
-  };
-
+  } finally {
+    setLoading(false);
+  }
+};
   return (
     <div className="h-screen flex flex-col lg:flex-row bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden relative">
       {/* Animated Background Elements */}

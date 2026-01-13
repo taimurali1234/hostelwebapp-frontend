@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import { Mail, Lock, Eye, EyeOff, Loader } from "lucide-react";
 import { z } from "zod";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
 import ForgotPasswordModal from "../../components/auth/ForgotPasswordModal";
+import { loginService, resendVerificationEmail } from "../../services/authService";
+import { useAuth } from "../../context/AuthContext";
 
 // Zod validation schema
 const LoginSchema = z.object({
@@ -16,7 +17,6 @@ type LoginDTO = z.infer<typeof LoginSchema>;
 export default function Login() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { login } = useAuth();
 
   const [form, setForm] = useState({
     email: "",
@@ -33,6 +33,18 @@ export default function Login() {
   const [resendEmail, setResendEmail] = useState("");
   const [resendLoading, setResendLoading] = useState(false);
   const [toast, setToast] = useState("");
+  const {user ,setUser} = useAuth();
+
+  useEffect(() => {
+  if (!user) return;
+
+  if (user.role === "ADMIN" || user.role === "COORDINATOR") {
+    navigate("/admin/dashboard");
+  } else {
+    navigate("/");
+  }
+}, [user, navigate]);
+
 
   // Check for verification success from URL or session expiration
   useEffect(() => {
@@ -65,20 +77,16 @@ export default function Login() {
       setLoading(true);
 
       // Use the auth context login function
-      await login(validatedData.email, validatedData.password);
+const res = await loginService(
+      validatedData.email,
+      validatedData.password
+    );
+        setUser(res.data);
 
       setSuccess("Login successful! Redirecting...");
 
-      // Get user info from localStorage
-      const user = JSON.parse(localStorage.getItem("user") || "{}");
-
-      setTimeout(() => {
-        if (user?.role === "ADMIN" || user?.role === "COORDINATOR") {
-          navigate("/admin/dashboard");
-        } else {
-          navigate("/");
-        }
-      }, 1500);
+      setToast("🎉 Login successful! Redirecting...");
+      
     } catch (err: any) {
       // ✅ FIXED ZOD ERROR HANDLING
       if (err instanceof z.ZodError) {
@@ -107,13 +115,8 @@ export default function Login() {
     try {
       setResendLoading(true);
 
-      const response = await fetch("http://localhost:3000/api/users/resendEmail", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email: resendEmail }),
-      });
+      const response = await resendVerificationEmail(resendEmail);
+        
 
       const data = await response.json();
 
@@ -137,6 +140,7 @@ export default function Login() {
       setResendLoading(false);
     }
   };
+  
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-y-auto lg:overflow-hidden relative">

@@ -63,18 +63,30 @@ export default function AddNotificationModal({
   };
 
   const handleSubmit = () => {
-    if (!form.message.trim()) {
-      setError("Message is required");
-      return;
-    }
+  if (!form.message.trim()) {
+    setError("Message is required");
+    return;
+  }
 
-    if (form.audience === "USER" && !form.userId?.trim()) {
-      setError("User ID is required when audience is 'Specific User'");
-      return;
-    }
+  if (form.audience === "USER" && !form.userId?.trim()) {
+    setError("User ID is required when audience is 'Specific User'");
+    return;
+  }
 
-    onSubmit(form);
+  // 🔥 CLEAN PAYLOAD
+  const payload: CreateNotificationForm = {
+    title: form.title || undefined,
+    message: form.message,
+    audience: form.audience,
+    severity: form.severity,
   };
+
+  if (form.audience === "USER") {
+    payload.userId = form.userId?.trim();
+  }
+
+  onSubmit(payload);
+};
 
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">

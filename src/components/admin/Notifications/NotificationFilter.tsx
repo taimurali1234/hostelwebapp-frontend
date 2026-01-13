@@ -3,6 +3,8 @@ import { useState } from "react";
 import AddNotificationModal, {
   type CreateNotificationForm,
 } from "./AddNotificationModel";
+import { useCreateMutation } from "../../../hooks/useFetchApiQuerry";
+import { toast } from "react-toastify";
 
 export interface NotificationsFiltersProps {
   filters: {
@@ -24,13 +26,24 @@ export function NotificationsFilters({
   onClear,
 }: NotificationsFiltersProps) {
   const [open, setOpen] = useState(false);
+  const createNotificationMutation = useCreateMutation<CreateNotificationForm>(
+    "notifications",
+    "/api/notifications"
+  );
 
-  const handleCreateNotification = (
+  const handleCreateNotification = async (
     data: CreateNotificationForm
   ) => {
-    console.log("SEND TO BACKEND:", data);
-  };
-
+   await createNotificationMutation.mutateAsync(data,{
+           onSuccess: (res) => {
+         toast.success(res.message || "notification created successfully");
+         setOpen(false);
+       },
+       onError: (err) => {
+         toast.error(err.message);
+       },
+         });
+       }
   return (
     <>
       <div className="flex items-center justify-between mb-4">

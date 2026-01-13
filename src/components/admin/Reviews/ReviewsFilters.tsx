@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import AddReviewModal, {
   type CreateReviewForm,
 } from "./AddReviewModel";
+import { useCreateMutation } from "../../../hooks/useFetchApiQuerry";
 
 export interface ReviewsFiltersProps {
   filters: {
@@ -25,48 +26,27 @@ export function ReviewsFilters({
   onClear,
 }: ReviewsFiltersProps) {
   const [open, setOpen] = useState(false);
-  const queryClient = useQueryClient();
+const createReviewMutation = useCreateMutation<CreateReviewForm>(
+  "reviews",
+  "/api/reviews"
+);
 
-  /* =========================
-     CREATE REVIEW MUTATION
-  ========================== */
-
-  const createReviewMutation = useMutation({
-    mutationFn: async (data: CreateReviewForm) => {
-      const res = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/reviews`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
-        }
-      );
-
-      const result = await res.json();
-      if (!res.ok) throw new Error(result.message);
-      return result;
-    },
-
-    onSuccess: () => {
-      toast.success("Review added successfully ⭐");
-
-      // 🔥 refresh reviews list
-      queryClient.invalidateQueries({ queryKey: ["reviews"] });
-      setOpen(false);
-    },
-
-    onError: (error: unknown) => {
-      if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error("Failed to add review");
-      }
-    },
-  });
+  
 
   const handleCreateReview = async (data: CreateReviewForm) => {
-    await createReviewMutation.mutate(data);
-  };
+
+      await createReviewMutation.mutateAsync(data,{
+        onSuccess: (res) => {
+      toast.success(res.message || "User created successfully");
+      setOpen(false);
+    },
+    onError: (err) => {
+      toast.error(err.message);
+    },
+      });
+    }
+      
+   
 
   return (
     <>

@@ -3,8 +3,7 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
-
-const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+import apiClient from "../services/apiClient";
 
 /* =======================
    PAGINATED LIST QUERY
@@ -17,6 +16,56 @@ interface PaginatedResponse<T> {
   limit: number;
 }
 
+/* =======================
+   CREATE MUTATION (GENERIC)
+======================= */
+
+interface ApiResponse<T> {
+  success?: boolean;
+  message?: string;
+  data?: T;
+}
+
+export function useCreateMutation<TPayload, TResponse = any>(
+  listKey: string,      // e.g. "users", "reviews"
+  endpoint: string      // e.g. "/api/users"
+) {
+  const queryClient = useQueryClient();
+
+  return useMutation<ApiResponse<TResponse>, Error, TPayload>({
+    mutationFn: async (payload) => {
+      try {
+        const res = await apiClient.post(endpoint, payload);
+
+        // Backend standard response
+        return res.data;
+      } catch (err: any) {
+        /**
+         * Axios error normalization
+         */
+        const message =
+          err?.response?.data?.message ||
+          err?.message ||
+          "Something went wrong";
+
+        throw new Error(message);
+      }
+    },
+
+    onSuccess: (response) => {
+      /**
+       * Optional success validation
+       */
+      if (response?.success === false) {
+        throw new Error(response.message || "Creation failed");
+      }
+
+      // 🔄 Refresh list
+      queryClient.invalidateQueries({ queryKey: [listKey] });
+    },
+  });
+}
+
 export function usePaginatedQuery<T>(
   key: string,
   queryString: string,
@@ -25,21 +74,10 @@ export function usePaginatedQuery<T>(
   return useQuery<PaginatedResponse<T>>({
     queryKey: [key, queryString],
 
-    queryFn: async ({ signal }) => {
-      const res = await fetch(
-        `${API_BASE_URL}${queryString}`,
-        { 
-          signal,
-          credentials: 'include'
-        }
-      );
+    queryFn: async () => {
+      const res = await apiClient.get(queryString);
 
-      if (!res.ok) throw new Error("Fetch failed");
-
-      const json = await res.json();
-
-      // Handle backend response structure: { success, message, data: {...} }
-      const responseData = json.data ?? json;
+      const responseData = res.data.data ?? res.data;
 
       return {
         items: responseData[itemsKey] ?? [],
@@ -49,7 +87,6 @@ export function usePaginatedQuery<T>(
       };
     },
 
-    // React Query v5 replacement for keepPreviousData
     placeholderData: (prev) => prev,
   });
 }
@@ -68,20 +105,9 @@ export function useSingleQuery<T>(
     queryKey: [key, id],
     enabled: !!id && enabled,
 
-    queryFn: async ({ signal }) => {
-      const res = await fetch(
-        `${API_BASE_URL}${endpoint}/${id}`,
-        { 
-          signal,
-          credentials: 'include'
-        }
-      );
-
-      if (!res.ok) throw new Error("Fetch failed");
-      const json = await res.json();
-      
-      // Handle backend response structure: { success, message, data: {...} }
-      return json.data ?? json;
+    queryFn: async () => {
+      const res = await apiClient.get(`${endpoint}/${id}`);
+      return res.data.data ?? res.data;
     },
   });
 }
@@ -91,8 +117,8 @@ export function useSingleQuery<T>(
 ======================= */
 
 export function useUpdateMutation<T>(
-  listKey: string,   // e.g. "rooms"
-  endpoint: string,  // e.g. "/api/rooms"
+  listKey: string,
+  endpoint: string,
   id: string | null
 ) {
   const queryClient = useQueryClient();
@@ -101,60 +127,34 @@ export function useUpdateMutation<T>(
     mutationFn: async (data: T) => {
       if (!id) throw new Error("Invalid ID");
 
-      const res = await fetch(
-        `${API_BASE_URL}${endpoint}/${id}`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          credentials: 'include',
-          body: JSON.stringify(data),
-        }
-      );
-        const result = await res.json();
-
-
-      if (!res.ok) throw new Error(result.message || "Update failed");
-      return result;
+      const res = await apiClient.patch(`${endpoint}/${id}`, data);
+      return res.data;
     },
 
     onSuccess: () => {
-      // ✅ refresh list
       queryClient.invalidateQueries({ queryKey: [listKey] });
-
-      // ✅ refresh single item
       queryClient.invalidateQueries({ queryKey: [listKey, id] });
     },
   });
 }
-
 
 /* =======================
    DELETE MUTATION
 ======================= */
 
 export function useDeleteMutation(
-  listKey: string,   // e.g. "rooms"
-  endpoint: string   // e.g. "/api/rooms"
+  listKey: string,
+  endpoint: string
 ) {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const res = await fetch(
-        `${API_BASE_URL}${endpoint}/${id}`,
-        {
-          method: "DELETE",
-          credentials: 'include'
-        }
-      );
-      const result = await res.json()
-
-      if (!res.ok) throw new Error(result.message || "Delete failed");
-      return result;
+      const res = await apiClient.delete(`${endpoint}/${id}`);
+      return res.data;
     },
 
     onSuccess: () => {
-      // 🔄 refresh rooms list
       queryClient.invalidateQueries({ queryKey: [listKey] });
     },
   });

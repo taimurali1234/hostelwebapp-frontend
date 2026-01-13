@@ -3,6 +3,7 @@ import { useState } from "react";
 import AddUserModal, { type CreateUserForm } from "./AddUsersModel";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
+import { useCreateMutation } from "../../../hooks/useFetchApiQuerry";
 
 export interface UsersFiltersProps {
   filters: {
@@ -23,47 +24,21 @@ export function UsersFilters({
   onClear,
 }: UsersFiltersProps) {
   const [open, setOpen] = useState(false);
-  const queryClient = useQueryClient();
+  const createUserMutation = useCreateMutation<CreateUserForm>(
+      "users",
+      "/api/users"
+    );
 
-  /* =========================
-     CREATE USER MUTATION
-  ========================== */
-
-  const createUserMutation = useMutation({
-    mutationFn: async (data: CreateUserForm) => {
-      const res = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/users/register`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
-        }
-      );
-
-      const result = await res.json();
-      if (!res.ok) throw new Error(result.message);
-      return result;
-    },
-
-    onSuccess: () => {
-      toast.success("User created successfully 🎉");
-
-      // 🔥 refresh users list (same as rooms)
-      queryClient.invalidateQueries({ queryKey: ["users"] });
-      setOpen(false);
-    },
-
-    onError: (error: unknown) => {
-      if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error("Failed to create user");
-      }
-    },
-  });
-
-  const handleCreateUser = (data: CreateUserForm) => {
-    createUserMutation.mutate(data);
+  const handleCreateUser = async (data: CreateUserForm) => {
+    await createUserMutation.mutateAsync(data, {
+      onSuccess: (res) => {
+        toast.success(res.message || "User created successfully");
+        setOpen(false);
+      },
+      onError: (err) => {
+        toast.error(err.message);
+      },
+    });
   };
 
   return (

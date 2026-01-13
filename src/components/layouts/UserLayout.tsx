@@ -1,10 +1,12 @@
+import Footer from "./Footer";
+import UserNavbar from "./UserNavbar";
 
-const UserLayout = () => {
+export default function UserLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div>
-      
+    <div className="min-h-screen flex flex-col">
+      <UserNavbar />
+      <main className="pt-[72px] flex-1">{children}</main>
+      <Footer />
     </div>
-  )
+  );
 }
-
-export default UserLayout

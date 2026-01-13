@@ -19,6 +19,7 @@ import AddNotificationModal, {
 } from "../../components/admin/Notifications/AddNotificationModel";
 import { toast } from "react-toastify";
 import DeleteConfirmModal from "../../components/admin/Rooms/DeleteRoomModel";
+import { useDeleteMutation, useUpdateMutation } from "../../hooks/useFetchApiQuerry";
 
 interface NotificationsFiltersState {
   search: string;
@@ -79,9 +80,14 @@ export default function Notifications() {
   );
 
   const { data, isLoading } = useNotifications(queryFilters);
+  console.log("Notifications data:", data);
   const createMutation = useCreateNotification();
-  const updateMutation = useUpdateNotification();
-  const deleteMutation = useDeleteNotification();
+  const updateMutation = useUpdateMutation(
+    "notifications", "/api/notifications", selectedNotificationId
+  );
+  const deleteMutation = useDeleteMutation(
+    "notifications", "/api/notifications"
+  );
 
   const notifications = data?.items ?? [];
   const total = data?.total ?? 0;
@@ -103,49 +109,38 @@ export default function Notifications() {
   /* =====================
      EDIT NOTIFICATION
   ====================== */
-  const handleEditClick = (id: string) => {
+  const handleEdit = (id: string) => {
+    console.log(id)
     const notification = notifications.find((n) => n.id === id);
-    if (notification) {
+      setSelectedNotificationId(id); // ✅ FIX
+
+    if (notification && notification.id) {
       setSelectedNotification({
-        id,
-        title: notification.title || "",
-        message: notification.message,
-        audience: notification.audience as
-          | "ALL_USERS"
-          | "USER"
-          | "ADMIN",
-        userId: notification.userId || "",
-        severity: notification.severity as
-          | "INFO"
-          | "SUCCESS"
-          | "WARNING"
-          | "ERROR",
+        ...notification,
+        id: notification.id,
+        audience: notification.audience === "ALL" ? "ALL_USERS" : notification.audience,
       });
-      setSelectedNotificationId(id);
       setEditModalOpen(true);
     }
   };
 
-  const handleEditSubmit = (formData: CreateNotificationForm) => {
-    if (!selectedNotificationId) return;
-
-    updateMutation.mutate(
-      { id: selectedNotificationId, data: formData },
-      {
+  const handleUpdateNotification = (data: CreateNotificationForm & { id: string }) => {
+      updateMutation.mutate(data, {
         onSuccess: () => {
-          toast.success("Notification updated successfully! ✏️");
+          toast.success("Notification updated successfully ✅");
           setEditModalOpen(false);
-          setSelectedNotificationId(null);
         },
         onError: (error: unknown) => {
-          let message = "Failed to update notification";
-          if (error instanceof Error) message = error.message;
-          toast.error(message);
-        },
-      }
-    );
-  };
-
+        let message = "Failed to update user";
+  
+        if (error instanceof Error) {
+          message = error.message;
+        }
+  
+        toast.error(message);
+      },
+      });
+    };
   /* =====================
      DELETE NOTIFICATION
   ====================== */
@@ -221,7 +216,7 @@ export default function Notifications() {
                   <NotificationsRow
                     key={n.id || `notification-${idx}`}
                     notification={n}
-                    onEdit={handleEditClick}
+                    onEdit={handleEdit}
                     onDelete={handleDelete}
                   />
                 ))
@@ -265,9 +260,13 @@ export default function Notifications() {
           setSelectedNotification(undefined);
           setSelectedNotificationId(null);
         }}
-        onSubmit={
-          editModalOpen ? handleEditSubmit : handleCreateSubmit
-        }
+        onSubmit={(data) => {
+          if (editModalOpen && selectedNotification?.id) {
+            handleUpdateNotification({ ...data, id: selectedNotification.id });
+          } else {
+            handleCreateSubmit(data);
+          }
+        }}
         loading={
           editModalOpen
             ? updateMutation.isPending

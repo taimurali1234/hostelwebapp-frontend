@@ -4,6 +4,7 @@ import type { CreateRoomForm } from "../../../types/room.types";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useCreateMutation } from "../../../hooks/useFetchApiQuerry";
 
 
 
@@ -21,42 +22,21 @@ export interface RoomFiltersProps {
 export function RoomFilters({ filters, onChange, onClear }: RoomFiltersProps) {
     const [open, setOpen] = useState<boolean>(false);
 
-    const queryClient = useQueryClient();
-
-const createRoomMutation = useMutation({
-  mutationFn: async (data: CreateRoomForm) => {
-    const res = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/api/rooms/`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      }
+    const createRoomMutation = useCreateMutation<CreateRoomForm>(
+      "rooms",
+      "/api/rooms"
     );
 
-    const result = await res.json();
-    if (!res.ok) throw new Error(result.message);
-    return result;
-  },
-
-  onSuccess: () => {
-    toast.success("Room created successfully 🎉");
-
-    // 🔥 THIS AUTO REFRESHES ROOMS LIST
-    queryClient.invalidateQueries({ queryKey: ["rooms"] });
-  },
-
- onError: (error: unknown) => {
-  if (error instanceof Error) {
-    toast.error(error.message);
-  } else {
-    toast.error("Failed to create room");
-  }
-}
-});
-
-const handleCreateRoom = (data: CreateRoomForm) => {
-  createRoomMutation.mutate(data);
+const handleCreateRoom = async (data: CreateRoomForm) => {
+  await createRoomMutation.mutateAsync(data, {
+    onSuccess: (res) => {
+      toast.success(res.message || "Room created successfully");
+      setOpen(false);
+    },
+    onError: (err) => {
+      toast.error(err.message);
+    },
+  });
 };
 
 

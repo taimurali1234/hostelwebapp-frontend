@@ -66,6 +66,7 @@ export default function Bookings() {
   );
 
   const { data, isLoading } = useBookings(queryFilters);
+  console.log("Bookings data:", data);
   const updateBookingMutation = useUpdateBooking();
   const deleteBookingMutation = useDeleteBooking();
 

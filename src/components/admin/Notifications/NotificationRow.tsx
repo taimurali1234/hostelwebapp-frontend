@@ -91,7 +91,7 @@ export function NotificationsRow({
       {/* Actions */}
       <td className="px-4 py-3 whitespace-nowrap">
         <div className="flex gap-2">
-          {onEdit && notification.id && (
+          {/* {onEdit && notification.id && (
             <button
               onClick={() => onEdit(notification.id!)}
               className="text-blue-600 hover:text-blue-800 transition"
@@ -99,7 +99,7 @@ export function NotificationsRow({
             >
               <Edit2 size={16} />
             </button>
-          )}
+          )} */}
           {onDelete && notification.id && (
             <button
               onClick={() => onDelete(notification.id!)}

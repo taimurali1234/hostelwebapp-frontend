@@ -1,33 +1,29 @@
 import { Navigate } from "react-router-dom";
 import type { ComponentType } from "react";
+import { useAuth } from "../context/AuthContext";
 
 interface ProtectedRouteProps {
   element: ComponentType;
   allowedRoles?: ("USER" | "ADMIN" | "COORDINATOR")[];
 }
 
-const ProtectedRoute = ({ 
+const ProtectedRoute = ({
   element: Component,
-  allowedRoles = ["ADMIN", "COORDINATOR"] // Default: only admin and coordinator can access admin routes
+  allowedRoles,
 }: ProtectedRouteProps) => {
-  const userData = localStorage.getItem("user");
-  const role = userData ? JSON.parse(userData).role : null;
+  const { user, isAuthenticated } = useAuth();
 
-  // Check if user is authenticated
-  if (!userData && role === null) {
-    return <Navigate to="/login" />;
+  if (!isAuthenticated || !user) {
+    return <Navigate to="/login" replace />;
   }
 
-  // Check if user has allowed role
-  if (!allowedRoles.includes(role as any)) {
-    // Redirect based on their role
-    if (role === "ADMIN" || role === "COORDINATOR") {
-      return <Navigate to="/admin/dashboard" />;
-    } else {
-      return <Navigate to="/" />;
+  if (allowedRoles && !allowedRoles.includes(user.role)) {
+    // Redirect based on role
+    if (user.role === "ADMIN" || user.role === "COORDINATOR") {
+      return <Navigate to="/admin/dashboard" replace />;
     }
+    return <Navigate to="/" replace />;
   }
-
   return <Component />;
 };
 

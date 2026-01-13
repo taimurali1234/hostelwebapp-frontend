@@ -1,20 +1,19 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import routes from "./routes/AppRoutes";
-import {  type ComponentType } from "react";
+import {   type ReactElement } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AuthProvider } from "./context/AuthContext";
 
 export interface RouteType {
   path: string;
-  element: ComponentType;
+  element: ReactElement;
 }
 
 type RouteGroup = RouteType[];
 
 interface AppRoutes {
   public: RouteGroup;
-  dashboard: RouteGroup;
   admin: RouteGroup;
 }
 
@@ -23,8 +22,8 @@ const typedRoutes = routes as AppRoutes;
 const AppContent = () => {
   
   const renderRoutes = (routesArray: RouteType[]) =>
-    routesArray.map(({ path, element: Element }) => (
-      <Route key={path} path={path} element={<Element />} />
+    routesArray.map(({ path, element }) => (
+      <Route key={path} path={path} element={element} />
     ));
 
   return (
@@ -40,7 +39,6 @@ const AppContent = () => {
       <main>
         <Routes>
           {renderRoutes(typedRoutes.public)}
-          {renderRoutes(typedRoutes.dashboard)}
           {renderRoutes(typedRoutes.admin)}
         </Routes>
       </main>

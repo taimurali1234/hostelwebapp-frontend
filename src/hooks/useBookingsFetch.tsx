@@ -4,6 +4,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import type { BookingRowType } from "../components/admin/Booking/BookingRow";
+import apiClient from "../services/apiClient";
 
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -104,36 +105,19 @@ export function useBookings(filters: BookingsFilters) {
 
   return useQuery<BookingResponse>({
     queryKey: ["bookings", params.toString()],
-    queryFn: async ({ signal }) => {
-      const res = await fetch(
-        `${API_BASE_URL}/api/bookings?${params.toString()}`,
-        { signal }
+
+    queryFn: async () => {
+      const res = await apiClient.get(
+        `/api/bookings?${params.toString()}`
       );
-
-      if (!res.ok) throw new Error("Failed to fetch bookings");
-
-      const json = await res.json();
-
-      // Handle backend response structure: { success, message, data: {...} }
-      const responseData = json.data ?? json;
-      
-      // Handle array or object response from backend
-      const bookings = Array.isArray(responseData) ? responseData : responseData.bookings || responseData.items || [];
-      
-      // Transform bookings to match BookingRowType
-      const transformedBookings = bookings.map((booking: BackendBooking) =>
-        transformBooking(booking)
-      );
-
-      // Handle pagination
-      const page = filters.page ?? 1;
-      const limit = filters.limit ?? 10;
+console.log("Bookings fetch response:", res);
+      const data = res.data.data ?? res.data;
 
       return {
-        items: transformedBookings.slice((page - 1) * limit, page * limit),
-        total: transformedBookings.length,
-        page,
-        limit,
+        items: (data.items || []).map(transformBooking),
+        total: data.total,
+        page: data.page,
+        limit: data.limit,
       };
     },
     placeholderData: (prev) => prev,
