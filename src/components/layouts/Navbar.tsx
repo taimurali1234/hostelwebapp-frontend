@@ -42,7 +42,7 @@ export default function Navbar() {
   }, [isDropdownOpen]);
 
   return (
-    <div className="flex justify-between items-center px-6 py-6 bg-sidebar border-b border-gray-300 fixed z-40 w-full">
+    <div className="flex justify-between items-center px-6 py-6 bg-[#eef6f5] border-b border-gray-300 fixed z-40 w-full">
       <div>     
         <h1 className="text-xl font-semibold">Logo Here</h1>
       </div>

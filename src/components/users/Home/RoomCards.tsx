@@ -54,10 +54,24 @@ const RoomCard: React.FC<RoomCardProps> = ({ room }) => {
 
         {/* Price + Button */}
         <div className="flex items-center justify-between">
-          <p className="text-2xl font-bold text-black">
-            ${room.price}
-            <span className="text-sm text-gray-500">/night</span>
-          </p>
+          <div className="text-2xl font-bold text-black">
+            {room.shortTermPrice || room.price ? (
+              <>
+                <div className="text-lg">
+                  PKR {room.shortTermPrice || room.price}
+                  <span className="text-sm text-gray-500">/night</span>
+                </div>
+                {room.longTermPrice && (
+                  <div className="text-lg">
+                    PKR {room.longTermPrice}
+                    <span className="text-sm text-gray-500">/month</span>
+                  </div>
+                )}
+              </>
+            ) : (
+              <span>N/A</span>
+            )}
+          </div>
 
           <button
             disabled={!isAvailable}

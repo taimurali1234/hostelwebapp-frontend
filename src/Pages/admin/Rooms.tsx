@@ -11,9 +11,10 @@ import EditRoomModal from "../../components/admin/Rooms/EditRoomModal";
 import { useDebounce } from "../../hooks/useDebounce";
 import { useDeleteMutation, useUpdateMutation } from "../../hooks/useFetchApiQuerry";
 import { useRooms } from "../../hooks/useRoomsFetch";
-import type { CreateRoomForm } from "../../types/room.types";
+import type {  EditRoomForm } from "../../types/room.types";
 import { toast } from "react-toastify";
 import DeleteConfirmModal from "../../components/admin/Rooms/DeleteRoomModel";
+import RoomMediaModal from "../../components/admin/Rooms/RoomMediaModel";
 
 interface RoomFiltersState {
   title: string;
@@ -23,13 +24,14 @@ interface RoomFiltersState {
 }
 
 const columns = [
-  "Room name",
+  "Name",
   "Bed",
-  "Room floor",
+  "floor",
   "Status",
   "Booked Seats",
-  "Room type",
-  "Price",
+  "Type",
+  "Per Night",
+  "Per Month",
   "Actions",
 ];
 
@@ -51,6 +53,15 @@ export default function Rooms() {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteRoomId, setDeleteRoomId] = useState<string | null>(null);
 
+  const [mediaOpen, setMediaOpen] = useState(false);
+const [mediaType, setMediaType] = useState<"image" | "video">("image");
+const [mediaRoomId, setMediaRoomId] = useState<string | null>(null);
+
+const handleMedia = (roomId: string, type: "image" | "video") => {
+  setMediaRoomId(roomId);
+  setMediaType(type);
+  setMediaOpen(true);
+};
   const debouncedFilters = useDebounce(filters, 500);
 
   const queryFilters = useMemo(
@@ -69,13 +80,13 @@ export default function Rooms() {
 
   const rooms = data?.items ?? [];
   const total = data?.total ?? 0;
-  const updateRoomMutation = useUpdateMutation<CreateRoomForm>(
+  const updateRoomMutation = useUpdateMutation<EditRoomForm>(
     "rooms",
     "/api/rooms",
     selectedRoomId
   );
 
-  const handleUpdate = (data: CreateRoomForm) => {
+  const handleUpdate = (data: EditRoomForm) => {
   updateRoomMutation.mutate(data, {
     onSuccess: () => {
       toast.success("Room updated successfully ✅");
@@ -157,10 +168,10 @@ const handleDeleteClick = (id: string) => {
 
             <tbody className="max-h-[100px] overflow-y-scroll">
               {isLoading ? (
-                <TableCellLoader colSpan={7} text="Loading rooms..." />
+                <TableCellLoader colSpan={9} text="Loading rooms..." />
               ) : rooms.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="text-center py-6 text-gray-500">
+                  <td colSpan={9} className="text-center py-6 text-gray-500">
                     No rooms found
                   </td>
                 </tr>
@@ -172,6 +183,8 @@ const handleDeleteClick = (id: string) => {
                     onView={handleView}
                     onEdit={handleEdit}
                     onDelete={handleDeleteClick}
+                    onMedia={handleMedia}
+
                   />
                 ))
               )}
@@ -203,6 +216,13 @@ const handleDeleteClick = (id: string) => {
             </div>
           </div>
         </div>
+        {mediaOpen && mediaRoomId && (
+  <RoomMediaModal
+    roomId={mediaRoomId}
+    type={mediaType}
+    onClose={() => setMediaOpen(false)}
+  />
+)}
 
         {/* 🔥 MODALS OUTSIDE TABLE */}
         <ViewRoomModal

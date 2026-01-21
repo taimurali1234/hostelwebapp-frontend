@@ -1,11 +1,17 @@
+import ContactHero from '@/components/users/Contact/ContactHero';
 import UserLayout from '../../components/layouts/UserLayout'
+import ContactFormSection from '@/components/users/Contact/ContactForm';
+import ContactInfo from '@/components/users/Contact/ContactInfo';
+import MapSection from '@/components/users/Contact/GoogleMap';
+import VisitOfficeSection from '@/components/users/Contact/VisitUs';
 export default function Contact() {
   return (
     <UserLayout>
-      <section className="max-w-7xl mx-auto px-6 py-16">
-        <h1 className="text-3xl font-bold mb-4">Contact Us</h1>
-        {/* Contact form */}
-      </section>
+      <ContactHero/>
+      <ContactFormSection/>
+      <ContactInfo/>
+      <MapSection/>
+      <VisitOfficeSection/>
     </UserLayout>
   );
 }

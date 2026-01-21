@@ -11,7 +11,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
 }) => {
   return (
     <div
-      className={`flex flex-col mb-10 ${
+      className={`flex flex-col mb-20 ${
         align === "center" ? "items-center text-center" : "items-start text-left"
       }`}
     >

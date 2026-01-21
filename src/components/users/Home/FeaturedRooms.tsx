@@ -9,8 +9,10 @@ export interface Room {
   image: string;
   type: "Single" | "Double" | "Triple" | "Quad" | "Quant" | "VIP";
   beds: number;
-  price: number;
-  status: "Available" | "Full";   // ✅ NEW
+  price?: number;
+  shortTermPrice?: number;
+  longTermPrice?: number;
+  status: "Available" | "Full";
 }
 
 const roomsData: Room[] = [

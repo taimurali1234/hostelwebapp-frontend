@@ -116,7 +116,7 @@ export function useSingleQuery<T>(
    UPDATE MUTATION
 ======================= */
 
-export function useUpdateMutation<T>(
+export function useUpdateMutation<T extends { id?: string }>(
   listKey: string,
   endpoint: string,
   id: string | null
@@ -125,15 +125,20 @@ export function useUpdateMutation<T>(
 
   return useMutation({
     mutationFn: async (data: T) => {
-      if (!id) throw new Error("Invalid ID");
+      // Use ID from data first, then from parameter
+      const updateId = data.id || id;
+      
+      if (!updateId) throw new Error("Invalid ID");
 
-      const res = await apiClient.patch(`${endpoint}/${id}`, data);
+      const res = await apiClient.patch(`${endpoint}/${updateId}`, data);
       return res.data;
     },
 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [listKey] });
-      queryClient.invalidateQueries({ queryKey: [listKey, id] });
+      if (id) {
+        queryClient.invalidateQueries({ queryKey: [listKey, id] });
+      }
     },
   });
 }

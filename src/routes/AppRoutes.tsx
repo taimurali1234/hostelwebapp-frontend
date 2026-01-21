@@ -1,6 +1,7 @@
 import Home from "../Pages/users/Home";
 import Dashboard from "../Pages/admin/Dashboard";
 import Rooms from "../Pages/admin/Rooms";
+import RoomPricing from "../Pages/admin/RoomPricing";
 import Bookings from "../Pages/admin/Bookings";
 import Reviews from "../Pages/admin/Reviews";
 import Users from "../Pages/admin/Users";
@@ -14,6 +15,13 @@ import ResetPassword from "../components/auth/ResetPassword";
 
 import ProtectedRoute from "./ProtectedRoutes";
 import PublicRoute from "./PublicRoutes";
+import UserRooms from "../Pages/users/UserRooms";
+import About from "@/Pages/users/About";
+import Contact from "@/Pages/users/Contact";
+import Policy from "@/Pages/users/Policy";
+import Terms from "@/Pages/users/Terms";
+import SingleRoom from "@/Pages/users/SingleRoom";
+import BookingPage from "@/Pages/users/BookingPage";
 
 const routes = {
   public: [
@@ -25,6 +33,62 @@ const routes = {
       </PublicRoute>
     ),
   },
+   {
+    path: "/rooms",
+    element: (
+      <PublicRoute>
+        <UserRooms />
+      </PublicRoute>
+    ),
+  },
+   {
+    path: "/about",
+    element: (
+      <PublicRoute>
+        <About />
+      </PublicRoute>
+    ),
+  },
+   {
+    path: "/contact",
+    element: (
+      <PublicRoute>
+        <Contact />
+      </PublicRoute>
+    ),
+  },
+   {
+    path: "/privacy",
+    element: (
+      <PublicRoute>
+        <Policy />
+      </PublicRoute>
+    ),
+  },
+   {
+    path: "/terms",
+    element: (
+      <PublicRoute>
+        <Terms />
+      </PublicRoute>
+    ),
+  },
+  {
+  path: "/rooms/:id",
+  element: (
+    <PublicRoute>
+      <SingleRoom />
+    </PublicRoute>
+  ),
+},
+ {
+  path: "/bookings",
+  element: (
+    <PublicRoute>
+      <BookingPage />
+    </PublicRoute>
+  ),
+},
     {
       path: "/login",
       element: <Login />,
@@ -54,6 +118,15 @@ const routes = {
       element: (
         <ProtectedRoute
           element={Rooms}
+          allowedRoles={["ADMIN", "COORDINATOR"]}
+        />
+      ),
+    },
+    {
+      path: "/admin/room-pricing",
+      element: (
+        <ProtectedRoute
+          element={RoomPricing}
           allowedRoles={["ADMIN", "COORDINATOR"]}
         />
       ),

@@ -1,4 +1,4 @@
-import { Eye, Pencil, Trash2 } from "lucide-react";
+import { Eye, Image, Pencil, Trash2, Video } from "lucide-react";
 
 export interface RoomRowType {
   id: string;
@@ -6,20 +6,23 @@ export interface RoomRowType {
   beds: string;
   floor: string;
   status: "Available" | "Booked";
-  bookedSeats:number;
+  bookedSeats: number;
   type: string;
-  price: string;
+  price?: string;
+  shortTermPrice?: number | string;
+  longTermPrice?: number | string;
 }
 
 interface RoomRowProps {
   room: RoomRowType;
   onView: (room: RoomRowType) => void;
   onEdit: (id: string) => void;
-  onDelete: (id: string) => void; // ✅ NEW
+  onDelete: (id: string) => void; 
+  onMedia: (roomId: string, type: "image" | "video") => void; // ✅ NEW
 
 }
 
-export function RoomRow({ room, onView, onEdit,onDelete }: RoomRowProps) {
+export function RoomRow({ room, onView, onEdit, onDelete, onMedia }: RoomRowProps) {
   return (
     <tr className="border-b border-gray-300 last:border-none">
       <td className="px-6 py-4">{room.title}</td>
@@ -40,7 +43,18 @@ export function RoomRow({ room, onView, onEdit,onDelete }: RoomRowProps) {
 
       <td className="px-6 py-4 text-gray-600">{room.bookedSeats}</td>
       <td className="px-6 py-4 text-gray-600">{room.type}</td>
-      <td className="px-6 py-4 text-gray-600">{room.price}</td>
+      <td className="px-6 py-4 text-gray-600">
+  {room.shortTermPrice || room.price
+    ? `${room.shortTermPrice || room.price}`
+    : "N/A"}
+</td>
+
+<td className="px-6 py-4 text-gray-600">
+  {room.longTermPrice || room.price
+    ? `${room.longTermPrice || room.price}`
+    : "N/A"}
+</td>
+
 
       <td className="px-6 py-4">
         <div className="flex gap-4 text-gray-600">
@@ -54,6 +68,8 @@ export function RoomRow({ room, onView, onEdit,onDelete }: RoomRowProps) {
             className="cursor-pointer hover:text-black"
             onClick={() => onEdit(room.id)}
           />
+          <Image onClick={() => onMedia(room.id, "image")} className="cursor-pointer text-blue-500" />
+        <Video onClick={() => onMedia(room.id, "video")} className="cursor-pointer text-purple-500" />
           <Trash2 onClick={() => onDelete(room.id)} size={18} className="cursor-pointer text-red-500" />
         </div>
       </td>

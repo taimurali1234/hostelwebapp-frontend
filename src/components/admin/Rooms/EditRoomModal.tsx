@@ -43,6 +43,8 @@ export default function EditRoomModal({
       status: data.room.status,
       stayType: data.room.stayType,
       price: data.room.price,
+      shortTermPrice: data.room.shortTermPrice,
+      longTermPrice: data.room.longTermPrice,
     });
   }
 }, [open, data]);

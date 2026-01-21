@@ -1,12 +1,14 @@
 type Props = {
   page: number;
   totalPages: number;
+  limit: number;
   onPageChange: (page: number) => void;
 };
 
 export default function Pagination({
   page,
   totalPages,
+  limit,
   onPageChange,
 }: Props) {
   return (

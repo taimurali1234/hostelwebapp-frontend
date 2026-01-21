@@ -8,6 +8,9 @@ interface RoomsFilters {
   type?: string;
   page?: number;
   limit?: number;
+  sort?: string;
+  minPrice?: number;
+  maxPrice?: number;
 }
 
 export function useRooms(filters: RoomsFilters) {
@@ -15,8 +18,11 @@ export function useRooms(filters: RoomsFilters) {
     title: filters.title ?? "",
     status: filters.status ?? "",
     type: filters.type ?? "",
+    minPrice: String(filters.minPrice ?? ""),
+    maxPrice: String(filters.maxPrice ?? ""),
     page: String(filters.page ?? 1),
     limit: String(filters.limit ?? 10),
+    sort: filters.sort ?? "createdAt_desc",
   });
 
   if (filters.beds !== "" && filters.beds !== undefined) {

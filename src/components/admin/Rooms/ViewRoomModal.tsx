@@ -30,7 +30,15 @@ export default function ViewRoomModal({
           <Field label="Floor" value={room.floor} />
           <Field label="Status" value={room.status} />
           <Field label="Type" value={room.type} />
-          <Field label="Price" value={room.price} />
+          {room.shortTermPrice && (
+            <Field label="Short Term Price" value={`PKR ${room.shortTermPrice}`} />
+          )}
+          {room.longTermPrice && (
+            <Field label="Long Term Price" value={`PKR ${room.longTermPrice}`} />
+          )}
+          {room.price && !room.shortTermPrice && !room.longTermPrice && (
+            <Field label="Price" value={room.price} />
+          )}
         </div>
 
         <div className="flex justify-end pt-3">

@@ -99,8 +99,13 @@ const res = await loginService(
         setResendEmail(form.email);
         setShowResendModal(true);
       } else {
-        setError(err?.message || "Login failed. Please try again.");
-      }
+  const backendMessage =
+    err?.response?.data?.message || 
+    err?.message || 
+    "Login failed. Please try again.";
+
+  setError(backendMessage);
+}
     } finally {
       setLoading(false);
     }

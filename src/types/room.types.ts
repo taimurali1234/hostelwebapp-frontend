@@ -28,6 +28,7 @@ export interface CreateRoomForm {
 }
 
 export interface EditRoomForm {
+  id: string;
   title: string;
   type: RoomType;
   floor: string;
@@ -37,5 +38,7 @@ export interface EditRoomForm {
   status?: "AVAILABLE" | "BOOKED";
   stayType?: "LONG_TERM" | "SHORT_TERM";
   price?: number;
+  shortTermPrice?: number;
+  longTermPrice?: number;
 }
 

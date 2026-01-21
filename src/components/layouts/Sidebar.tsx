@@ -7,12 +7,14 @@ import {
   Users,
   BarChart,
   Bell,
+  Tag,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
 const menu = [
   { icon: Home, path: "/admin/dashboard", label: "Dashboard" },
   { icon: Bed, path: "/admin/rooms", label: "Rooms" },
+  { icon: Tag, path: "/admin/room-pricing", label: "Room Pricing" },
   { icon: BookOpen, path: "/admin/bookings", label: "Bookings" },
   { icon: Star, path: "/admin/reviews", label: "Reviews" },
   { icon: Bell, path: "/admin/notifications", label: "Notifications" },
@@ -23,7 +25,7 @@ const menu = [
 
 export default function Sidebar() {
   return (
-    <aside className="w-44 bg-sidebar px-4 py-6 border-r border-gray-300 
+    <aside className="w-44 bg-[#eef6f5] px-4 py-6 border-r border-gray-300 
       h-[calc(100vh-4rem)] overflow-y-auto thin-scrollbar fixed z-20"
     >
       <nav className="space-y-6">

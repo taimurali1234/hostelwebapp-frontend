@@ -18,7 +18,7 @@ const GallerySection: React.FC = () => {
   const [index, setIndex] = useState<number>(-1);
 
   return (
-    <section className="bg-[#f3f7f6] border-t border-b border-gray-200 py-16 px-6">
+    <section className="bg-[#f3f7f6] border-t border-b border-gray-200 py-20 px-6">
       <div className="max-w-6xl mx-auto">
 
         <SectionHeader

@@ -11,9 +11,6 @@ const API_BASE_URL =
 const apiClient: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
   withCredentials: true, // ⭐ REQUIRED for HttpOnly cookies
-  headers: {
-    "Content-Type": "application/json",
-  },
 });
 
 /**
