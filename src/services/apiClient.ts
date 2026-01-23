@@ -2,7 +2,7 @@
 import axios, { type AxiosInstance, AxiosError } from "axios";
 
 const API_BASE_URL =
-  import.meta.env.VITE_BACKEND_URL || "http://localhost:3000/api";
+  import.meta.env.VITE_BACKEND_URL;
 
 /**
  * Axios instance
