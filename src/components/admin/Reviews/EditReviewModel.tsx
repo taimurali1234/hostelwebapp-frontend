@@ -47,7 +47,7 @@ export default function EditReviewModal({
   const { data, isLoading } = useSingleQuery<SingleReviewApiResponse>(
     "review",
     reviewId,
-    "/api/reviews",
+    "/reviews",
     open
   );
   console.log(data)

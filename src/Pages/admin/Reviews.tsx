@@ -77,7 +77,7 @@ export default function Reviews() {
 
   const updateReviewMutation = useUpdateMutation<EditReviewForm>(
     "reviews",
-    "/api/reviews",
+    "/reviews",
     selectedReviewId
   );
 
@@ -98,7 +98,7 @@ export default function Reviews() {
 
   const deleteReviewMutation = useDeleteMutation(
     "reviews",
-    "/api/reviews"
+    "/reviews"
   );
 
   const handleDelete = (id: string) => {

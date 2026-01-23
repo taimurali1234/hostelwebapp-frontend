@@ -29,7 +29,7 @@ export default function Analytics() {
   const API = import.meta.env.VITE_BACKEND_URL;
 
   useEffect(() => {
-    fetch(`${API}/api/analytics/revenue?range=${range}`)
+    fetch(`${API}/analytics/revenue?range=${range}`)
       .then((r) => r.json())
       .then((json) => {
         // Handle backend response structure: { success, message, data: {...} }
@@ -37,7 +37,7 @@ export default function Analytics() {
         setRevenue(data);
       });
 
-    fetch(`${API}/api/analytics/bookings?range=${range}`)
+    fetch(`${API}/analytics/bookings?range=${range}`)
       .then((r) => r.json())
       .then((json) => {
         // Handle backend response structure: { success, message, data: {...} }
@@ -45,7 +45,7 @@ export default function Analytics() {
         setBookings(data);
       });
 
-    fetch(`${API}/api/analytics/compare?range=${range}`)
+    fetch(`${API}/analytics/compare?range=${range}`)
       .then((r) => r.json())
       .then((json) => {
         // Handle backend response structure: { success, message, data: {...} }

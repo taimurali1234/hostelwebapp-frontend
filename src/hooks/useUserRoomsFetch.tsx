@@ -28,7 +28,7 @@ export function useUserRooms(filters: any) {
 
   return usePaginatedQuery<Room>(
     "user-rooms",
-    `/api/rooms?${params.toString()}`,
+    `/rooms?${params.toString()}`,
     "rooms"
   );
 }

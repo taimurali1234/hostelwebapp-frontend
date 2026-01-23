@@ -28,7 +28,6 @@ export interface CreateRoomForm {
 }
 
 export interface EditRoomForm {
-  id: string;
   title: string;
   type: RoomType;
   floor: string;

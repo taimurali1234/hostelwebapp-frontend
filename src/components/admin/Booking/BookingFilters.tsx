@@ -60,8 +60,10 @@ export function BookingFilters({
         >
           <option value="">All Status</option>
           <option value="PENDING">Pending</option>
+          <option value="RESERVED">Reserved</option>
           <option value="CONFIRMED">Confirmed</option>
           <option value="CANCELLED">Cancelled</option>
+          <option value="COMPLETED">Completed</option>
         </select>
 
         {/* Source */}

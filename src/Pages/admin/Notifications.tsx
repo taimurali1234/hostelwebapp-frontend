@@ -83,10 +83,10 @@ export default function Notifications() {
   console.log("Notifications data:", data);
   const createMutation = useCreateNotification();
   const updateMutation = useUpdateMutation(
-    "notifications", "/api/notifications", selectedNotificationId
+    "notifications", "/notifications", selectedNotificationId
   );
   const deleteMutation = useDeleteMutation(
-    "notifications", "/api/notifications"
+    "notifications", "/notifications"
   );
 
   const notifications = data?.items ?? [];

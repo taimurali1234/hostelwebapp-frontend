@@ -22,7 +22,7 @@ export function useNotifications(filters: NotificationsFilters) {
 
   return usePaginatedQuery<NotificationRowType>(
     "notifications",
-    `/api/notifications?${params.toString()}`,
+    `/notifications?${params.toString()}`,
     "notifications"
   );
 }

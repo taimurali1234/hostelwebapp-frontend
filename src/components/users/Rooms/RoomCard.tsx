@@ -1,12 +1,13 @@
 import { useNavigate } from "react-router";
-import type { RoomStatus, RoomType } from "../../../types/room.types";
 import { BedDouble, Users, Bath } from "lucide-react";
+import type { RoomType } from "../../../types/room.types";
+
+/* ---------------- Types ---------------- */
 
 export interface RoomImage {
   id: string;
   url: string;
 }
- export type userRoomStatus = "AVAILABLE" | "BOOKED" | "RESERVED";
 
 export interface Room {
   id: string;
@@ -20,40 +21,44 @@ export interface Room {
   longTermPrice?: number | null;
 
   stayType: "LONG_TERM" | "SHORT_TERM";
-  status: userRoomStatus;
-  bookedSeats: number;
+
+  /** 🔥 IMPORTANT */
+  availableSeats: number;
+
   images: RoomImage[];
 }
 
+/* ---------------- Availability Logic (AVAILABLE SEATS BASED) ---------------- */
 
-const getStatusBadge = (status: userRoomStatus) => {
-  switch (status) {
-    case "AVAILABLE":
-      return "bg-green-600 text-white";
-    case "RESERVED":
-      return "bg-yellow-500 text-white";
-    case "BOOKED":
-      return "bg-red-600 text-white";
-    default:
-      return "bg-gray-500 text-white";
+const getRoomAvailability = (room: Room) => {
+  if (room.availableSeats <= 0) {
+    return {
+      text: "Full",
+      badgeClass: "bg-red-600 text-white",
+      isBooked: true,
+    };
   }
+
+  return {
+    text: `${room.availableSeats} Seat${
+      room.availableSeats > 1 ? "s" : ""
+    } Available`,
+    badgeClass: "bg-green-600 text-white",
+    isBooked: false,
+  };
 };
 
-const getStatusText = (status: userRoomStatus) => {
-  if (status === "BOOKED") return "Full";
-  if (status === "RESERVED") return "Reserved";
-  return "Available";
-};
+/* ---------------- Component ---------------- */
 
 const RoomCard: React.FC<{ room: Room }> = ({ room }) => {
-  const isBooked = room.status === "BOOKED";
-    const navigate = useNavigate();
-
+  const navigate = useNavigate();
+  const availability = getRoomAvailability(room);
+  const isBooked = availability.isBooked;
 
   return (
     <div
       className="bg-white rounded-xl overflow-hidden shadow 
-      hover:shadow-lg transition "
+      hover:shadow-lg transition"
     >
       {/* Image */}
       <div className="relative overflow-hidden">
@@ -68,9 +73,9 @@ const RoomCard: React.FC<{ room: Room }> = ({ room }) => {
         <span
           className={`absolute top-3 right-3 px-3 py-1 
           rounded-full text-xs font-semibold 
-          ${getStatusBadge(room.status)}`}
+          ${availability.badgeClass}`}
         >
-          {getStatusText(room.status)}
+          {availability.text}
         </span>
       </div>
 
@@ -79,55 +84,54 @@ const RoomCard: React.FC<{ room: Room }> = ({ room }) => {
         <h3 className="font-semibold text-lg">{room.title}</h3>
 
         <div className="flex items-center flex-wrap gap-2 text-sm text-gray-600">
+          {/* Beds (info only, NOT availability) */}
+          <div className="flex items-center gap-2">
+            <BedDouble size={18} className="text-gray-500" />
+            <span>{room.beds} Beds</span>
+          </div>
 
-  {/* Beds */}
-  <div className="flex items-center  gap-2">
-    <BedDouble size={18} className="text-gray-500" />
-    <span>{room.beds} Beds</span>
-  </div>
+          {/* Type */}
+          <div className="flex items-center gap-2">
+            <Users size={18} className="text-gray-500" />
+            <span>{room.type.replaceAll("_", " ")}</span>
+          </div>
 
-  {/* Type */}
-  <div className="flex items-center gap-2">
-    <Users size={18} className="text-gray-500" />
-    <span>{room.type.replaceAll("_", " ")}</span>
-  </div>
+          {/* Washroom */}
+          <div className="flex items-center gap-2">
+            <Bath size={18} className="text-gray-500" />
+            <span>{room.washrooms} Washroom</span>
+          </div>
+        </div>
 
-  {/* Washroom */}
-  <div className="flex items-center gap-2">
-    <Bath size={18} className="text-gray-500" />
-    <span>{room.washrooms} Washroom</span>
-  </div>
+        {/* Prices */}
+        <div className="flex items-center mt-4 gap-4 space-y-1">
+          {room.shortTermPrice && (
+            <p className="text-green-600 font-semibold">
+              ${room.shortTermPrice}{" "}
+              <span className="text-sm text-gray-500">/ night</span>
+            </p>
+          )}
 
-</div>
+          {room.longTermPrice && (
+            <p className="text-blue-600 font-semibold">
+              ${room.longTermPrice}{" "}
+              <span className="text-sm text-gray-500">/ month</span>
+            </p>
+          )}
 
-
-       <div className=" flex items-center mt-4 gap-4 space-y-1">
-  {room.shortTermPrice && (
-    <p className="text-green-600 font-semibold">
-      ${room.shortTermPrice} <span className="text-sm text-gray-500">/ night</span>
-    </p>
-  )}
-
-  {room.longTermPrice && (
-    <p className="text-blue-600 font-semibold">
-      ${room.longTermPrice} <span className="text-sm text-gray-500">/ month</span>
-    </p>
-  )}
-
-  {!room.shortTermPrice && !room.longTermPrice && (
-    <p className="text-gray-400">Price not available</p>
-  )}
-</div>
-
+          {!room.shortTermPrice && !room.longTermPrice && (
+            <p className="text-gray-400">Price not available</p>
+          )}
+        </div>
 
         {/* Button */}
         <button
           disabled={isBooked}
           onClick={() => {
-        if (!isBooked) {
-          navigate(`/rooms/${room.id}`);
-        }
-      }}
+            if (!isBooked) {
+              navigate(`/rooms/${room.id}`);
+            }
+          }}
           className={`w-full mt-3 py-2 rounded-full 
           transition font-medium
           ${

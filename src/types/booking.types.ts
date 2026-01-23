@@ -1,4 +1,4 @@
-export type BookingStatus = "PENDING" | "CONFIRMED" | "CANCELLED";
+export type BookingStatus = "PENDING" | "RESERVED" | "CONFIRMED" | "CANCELLED" | "COMPLETED";
 export type BookingType = "SHORT_TERM" | "LONG_TERM";
 export type BookingSource = "ADMIN";
 

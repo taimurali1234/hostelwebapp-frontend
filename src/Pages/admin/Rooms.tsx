@@ -26,9 +26,9 @@ interface RoomFiltersState {
 const columns = [
   "Name",
   "Bed",
-  "floor",
   "Status",
   "Booked Seats",
+  "Available Seats",
   "Type",
   "Per Night",
   "Per Month",
@@ -82,7 +82,7 @@ const handleMedia = (roomId: string, type: "image" | "video") => {
   const total = data?.total ?? 0;
   const updateRoomMutation = useUpdateMutation<EditRoomForm>(
     "rooms",
-    "/api/rooms",
+    "/rooms",
     selectedRoomId
   );
 
@@ -92,20 +92,19 @@ const handleMedia = (roomId: string, type: "image" | "video") => {
       toast.success("Room updated successfully ✅");
       setEditOpen(false);
     },
-    onError: (error: unknown) => {
-      let message = "Failed to update room";
+    onError: (error: any) => {
+  const message =
+    error?.response?.data?.message ||
+    error?.message ||
+    "Failed to update room";
 
-      if (error instanceof Error) {
-        message = error.message;
-      }
-
-      toast.error(message);
-    },
+  toast.error(message);
+},
   });
 };
 const deleteRoomMutation = useDeleteMutation(
   "rooms",
-  "/api/rooms"
+  "/rooms"
 );
 
 const handleConfirmDelete = () => {
@@ -160,18 +159,17 @@ const handleDeleteClick = (id: string) => {
           }}
         />
 
-        <div className="overflow-x-auto">
-            <div className="max-h-[250px] overflow-y-auto rounded-lg">
+        <div className="">
 
-          <table className="w-full text-sm ">
+          <table className="w-full  text-sm ">
             <TableHeader columns={columns} />
 
-            <tbody className="max-h-[100px] overflow-y-scroll">
+            <tbody className="">
               {isLoading ? (
-                <TableCellLoader colSpan={9} text="Loading rooms..." />
+                <TableCellLoader colSpan={8} text="Loading rooms..." />
               ) : rooms.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="text-center py-6 text-gray-500">
+                  <td colSpan={8} className="text-center py-6 text-gray-500">
                     No rooms found
                   </td>
                 </tr>
@@ -190,7 +188,6 @@ const handleDeleteClick = (id: string) => {
               )}
             </tbody>
           </table>
-          </div>
 
           {/* Pagination */}
           <div className="flex items-center justify-between mt-4">

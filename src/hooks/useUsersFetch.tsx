@@ -20,7 +20,7 @@ export function useUsers(filters: UsersFilters) {
 
   return usePaginatedQuery<UserRowType>(
     "users",                       // query key
-    `/api/users?${params.toString()}`,
+    `/users?${params.toString()}`,
     "users"                        // itemsKey
   );
 }

@@ -60,7 +60,7 @@ export default function Payments() {
           import.meta.env.VITE_BACKEND_URL;
 
         const res = await fetch(
-          `${API_BASE_URL}/api/payments?${queryString}`,
+          `${API_BASE_URL}/payments?${queryString}`,
           { signal: controller.signal }
         );
 

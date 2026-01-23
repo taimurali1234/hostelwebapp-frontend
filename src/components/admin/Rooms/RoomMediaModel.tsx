@@ -122,7 +122,7 @@ const RoomMediaModal: React.FC<Props> = ({ roomId, type, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
-      <div className="bg-white p-6 rounded-lg w-[420px] space-y-4">
+      <div className="bg-white p-6 rounded-lg w-105 space-y-4">
 
         <h2 className="font-semibold text-lg">
           Manage {isImage ? "Images" : "Video"}

@@ -65,18 +65,18 @@ export default function RoomPricing() {
 
   const createMutation = useCreateMutation<CreateRoomPricingForm>(
     "roomPricing",
-    "/api/seat-pricing"
+    "/seat-pricing"
   );
 
   const updateMutation = useUpdateMutation<EditRoomPricingForm>(
     "roomPricing",
-    "/api/seat-pricing",
+    "/seat-pricing",
     selectedPricingId
   );
 
   const deleteMutation = useDeleteMutation(
     "roomPricing",
-    "/api/seat-pricing"
+    "/seat-pricing"
   );
 
   const handleCreate = (data: CreateRoomPricingForm) => {

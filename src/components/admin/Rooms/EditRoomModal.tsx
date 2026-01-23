@@ -27,7 +27,7 @@ export default function EditRoomModal({
   const { data, isLoading } = useSingleQuery<SingleRoomApiResponse>(
     "room",
     roomId,
-    "/api/rooms",
+    "/rooms",
     open
   );
   console.log(data)

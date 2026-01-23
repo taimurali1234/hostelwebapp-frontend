@@ -20,7 +20,7 @@ export function useReviews(filters: ReviewsFilters) {
 
   return usePaginatedQuery<ReviewRowType>(
     "reviews",
-    `/api/reviews?${params.toString()}`,
+    `/reviews?${params.toString()}`,
     "reviews"
   );
 }

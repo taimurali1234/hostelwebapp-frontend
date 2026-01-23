@@ -5,7 +5,7 @@ export const uploadRoomImages = async (roomId: string, files: File[]) => {
   formData.append("roomId", roomId);
   files.forEach((file) => formData.append("images", file));
 
-  return apiClient.post("/api/rooms/uploads", formData);
+  return apiClient.post("/rooms/uploads", formData);
 };
 
 export const uploadRoomVideo = async (roomId: string, file: File) => {
@@ -13,17 +13,17 @@ export const uploadRoomVideo = async (roomId: string, file: File) => {
   formData.append("roomId", roomId);
   formData.append("video", file);
 
-  return apiClient.post("/api/rooms/uploads/video", formData);
+  return apiClient.post("/rooms/uploads/video", formData);
 };
 
 export const deleteRoomImage = (id: string) =>
-  apiClient.delete(`/api/rooms/uploads/${id}`);
+  apiClient.delete(`/rooms/uploads/${id}`);
 
 export const deleteRoomVideo = (id: string) =>
-  apiClient.delete(`/api/rooms/uploads/video/${id}`);
+  apiClient.delete(`/rooms/uploads/video/${id}`);
 
 export const getRoomImages = (roomId: string) =>
-  apiClient.get(`/api/rooms/uploads/${roomId}`);
+  apiClient.get(`/rooms/uploads/${roomId}`);
 
 export const getRoomVideos = (roomId: string) =>
-  apiClient.get(`/api/rooms/uploads/video/${roomId}`);
+  apiClient.get(`/rooms/uploads/video/${roomId}`);

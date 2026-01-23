@@ -52,6 +52,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setUserState(user);
   };
 
+ 
+
+
+
   return (
     <AuthContext.Provider
       value={{

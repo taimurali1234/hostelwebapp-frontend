@@ -3,6 +3,7 @@ import Dashboard from "../Pages/admin/Dashboard";
 import Rooms from "../Pages/admin/Rooms";
 import RoomPricing from "../Pages/admin/RoomPricing";
 import Bookings from "../Pages/admin/Bookings";
+import Orders from "../Pages/admin/Orders";
 import Reviews from "../Pages/admin/Reviews";
 import Users from "../Pages/admin/Users";
 import Notifications from "../Pages/admin/Notifications";
@@ -22,6 +23,8 @@ import Policy from "@/Pages/users/Policy";
 import Terms from "@/Pages/users/Terms";
 import SingleRoom from "@/Pages/users/SingleRoom";
 import BookingPage from "@/Pages/users/BookingPage";
+import BookingDetails from "@/Pages/users/BookingDetails";
+import BookingConfirmation from "@/Pages/users/BookingConfirmation";
 
 const routes = {
   public: [
@@ -89,6 +92,24 @@ const routes = {
     </PublicRoute>
   ),
 },
+{
+  path: "/booking-details",
+  element: (
+    <ProtectedRoute
+      element={BookingDetails}
+      allowedRoles={["USER", "ADMIN", "COORDINATOR"]}
+    />
+  ),
+},
+{
+  path: "/booking-confirmation",
+  element: (
+    <ProtectedRoute
+      element={BookingConfirmation}
+      allowedRoles={["USER", "ADMIN", "COORDINATOR"]}
+    />
+  ),
+},
     {
       path: "/login",
       element: <Login />,
@@ -136,6 +157,15 @@ const routes = {
       element: (
         <ProtectedRoute
           element={Bookings}
+          allowedRoles={["ADMIN", "COORDINATOR"]}
+        />
+      ),
+    },
+    {
+      path: "/admin/orders",
+      element: (
+        <ProtectedRoute
+          element={Orders}
           allowedRoles={["ADMIN", "COORDINATOR"]}
         />
       ),

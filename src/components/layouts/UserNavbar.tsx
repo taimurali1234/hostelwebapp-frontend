@@ -20,8 +20,8 @@ export default function UserNavbar() {
   const { user, setUser } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  const { bookings } = useBooking();
-  console.log("Current bookings in navbar:", bookings);
+const { cartItems = [] } = useBooking();
+  console.log("Current bookings in navbar:", cartItems);
 
 
 
@@ -151,15 +151,15 @@ export default function UserNavbar() {
           <div className="relative">
   <button onClick={() => setShowCart(p => !p)} className="p-2 rounded-full hover:bg-green-100">
     <ShoppingCart size={20} />
-    {bookings.length > 0 && (
+    {cartItems?.length > 0 && (
       <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-        {bookings.length}
+        {cartItems.length || 0}
       </span>
     )}
   </button>
   {showCart && (
   <div className="absolute right-0 mt-3 w-80 bg-white rounded-xl shadow-xl border p-3">
-    {bookings.slice(0, 2).map((b, i) => (
+    {cartItems?.slice(0, 2).map((b, i) => (
       <div key={i} className="flex gap-3 border-b pb-2 mb-2">
         <img   src={b.image?.url || "https://via.placeholder.com/150?text=No+Image"}
  className="w-16 h-16 rounded object-cover" />
@@ -173,7 +173,7 @@ export default function UserNavbar() {
       </div>
     ))}
 
-    {bookings.length > 2 && (
+    {cartItems?.length > 0 && (
       <Link
         to="/bookings"
         className="block text-center text-gray-600 hover:text-green-600 font-semibold text-sm mt-2"

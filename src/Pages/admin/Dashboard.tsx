@@ -8,6 +8,7 @@ import RoomStatusCard from "../../components/admin/Dashboard/RoomStatusCard";
 import StatCard from "../../components/admin/Dashboard/StatCard";
 import AdminLayout from "../../components/layouts/AdminLayout";
 import { type DashboardData } from "../../types/dashboard.types";
+import apiClient from "@/services/apiClient";
 
 export default function Dashboard() {
   const [data, setData] = useState<DashboardData | null>(null);
@@ -16,16 +17,12 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchDashboard = async () => {
       try {
-        const API = import.meta.env.VITE_BACKEND_URL;
-        const res = await fetch(`${API}/api/dashboard/`, {
-          credentials: "include",
-        });
-        const json = await res.json();
-        // Handle backend response structure: { success, message, data: {...} }
-        const dashboardData = json.data ?? json;
+        const res = await apiClient.get("/dashboard");
+        const dashboardData = res.data?.data ?? res.data;
         setData(dashboardData as DashboardData);
       } catch (err) {
         console.error("Dashboard fetch failed", err);
+        setData(null);
       } finally {
         setLoading(false);
       }
@@ -45,7 +42,7 @@ export default function Dashboard() {
   if (!data) {
     return (
       <AdminLayout>
-        <div className="p-6">No dashboard data</div>
+        <div className="p-6">Session expired or no dashboard data</div>
       </AdminLayout>
     );
   }
@@ -59,19 +56,19 @@ export default function Dashboard() {
         <div className="grid grid-cols-4 gap-4 mb-6">
           <StatCard
             title="Today's Book Rooms"
-            value={data.topCards.todayBookedRooms}
+            value={data.topCards?.todayBookedRooms ?? 0}
           />
           <StatCard
             title="Pending Rooms"
-            value={data.topCards.pendingRooms}
+            value={data.topCards?.pendingRooms ?? 0}
           />
           <StatCard
             title="Available Rooms"
-            value={data.topCards.availableRooms}
+            value={data.topCards?.availableRooms ?? 0}
           />
           <StatCard
             title="Total Revenue"
-            value={data.topCards.totalRevenue}
+            value={data.topCards?.totalRevenue ?? 0}
           />
         </div>
 
@@ -81,11 +78,11 @@ export default function Dashboard() {
         </div>
 
         <div className="grid grid-cols-4 gap-4 mb-6">
-          {data.roomsByType.map((room) => (
+          {data.roomsByType?.map((room) => (
             <RoomCard
               key={room.type}
               title={room.type.replace("_", " ")}
-              price={0 /* pricing later */}
+              price={0}
               used={`0/${room._count._all}`}
             />
           ))}
@@ -94,24 +91,24 @@ export default function Dashboard() {
         {/* 🔹 BOTTOM GRID */}
         <div className="grid grid-cols-12 gap-6">
           <RoomStatusCard
-            booked={data.roomStatus.booked}
-            available={data.roomStatus.available}
+            booked={data.roomStatus?.booked ?? 0}
+            available={data.roomStatus?.available ?? 0}
           />
 
           <FloorStatusCard
             percentage={
               Math.round(
-                (data.roomStatus.booked /
-                  (data.roomStatus.booked +
-                    data.roomStatus.available)) *
+                (data.roomStatus?.booked ?? 0) /
+                  ((data.roomStatus?.booked ?? 0) +
+                    (data.roomStatus?.available ?? 0)) *
                   100
               ) || 0
             }
           />
 
-          <BookingChart data={data.bookingOverview} />
+          <BookingChart data={data.bookingOverview ?? []} />
 
-          <RecentReviews reviews={data.recentReviews} />
+          <RecentReviews reviews={data.recentReviews ?? []} />
         </div>
       </div>
     </AdminLayout>

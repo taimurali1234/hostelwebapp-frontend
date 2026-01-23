@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { CreateNotificationForm } from "../components/admin/Notifications/AddNotificationModel";
 
-const API_BASE = "http://localhost:3000/api";
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 interface NotificationData extends CreateNotificationForm {
   id?: string;

@@ -62,7 +62,7 @@ const [deleteUserId, setDeleteUserId] = useState<string | null>(null);
 
   const updateUserMutation = useUpdateMutation<EditUserForm>(
     "users",
-    "/api/users",
+    "/users",
     selectedUserId
   );
 
@@ -97,7 +97,7 @@ const handleDeleteClick = (id: string) => {
 
   const deleteUserMutation = useDeleteMutation(
   "users",
-  "/api/users"
+  "/users"
 );
 
 

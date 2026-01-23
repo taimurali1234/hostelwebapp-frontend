@@ -8,6 +8,7 @@ import {
   BarChart,
   Bell,
   Tag,
+  ShoppingCart,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
@@ -15,6 +16,7 @@ const menu = [
   { icon: Home, path: "/admin/dashboard", label: "Dashboard" },
   { icon: Bed, path: "/admin/rooms", label: "Rooms" },
   { icon: Tag, path: "/admin/room-pricing", label: "Room Pricing" },
+  { icon: ShoppingCart, path: "/admin/orders", label: "Orders" },
   { icon: BookOpen, path: "/admin/bookings", label: "Bookings" },
   { icon: Star, path: "/admin/reviews", label: "Reviews" },
   { icon: Bell, path: "/admin/notifications", label: "Notifications" },

@@ -6,7 +6,7 @@ import {
 import type { BookingRowType } from "../components/admin/Booking/BookingRow";
 import apiClient from "../services/apiClient";
 
-const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+/* ---------------- Types ---------------- */
 
 interface BookingsFilters {
   search?: string;
@@ -15,38 +15,7 @@ interface BookingsFilters {
   source?: string;
   page?: number;
   limit?: number;
-}
-
-interface BackendBooking {
-  id: string;
-  userId: string;
-  roomId: string;
-  baseAmount: number;
-  taxAmount?: number;
-  discount?: number;
-  couponCode?: string;
-  bookingType: "SHORT_TERM" | "LONG_TERM";
-  seatsSelected: number;
-  status: "PENDING" | "CONFIRMED" | "CANCELLED";
-  source: string;
-  checkIn: string;
-  checkOut?: string;
-  totalAmount: number;
-  createdAt: string;
-  updatedAt: string;
-  cancelledAt?: string;
-  room: {
-    id: string;
-    title?: string;
-    name?: string;
-  };
-  user: {
-    id: string;
-    firstName?: string;
-    lastName?: string;
-    email: string;
-    name?: string;
-  };
+  orderId?: string | null;
 }
 
 interface BookingResponse {
@@ -67,19 +36,21 @@ interface CreateBookingPayload {
 }
 
 interface UpdateBookingPayload {
-  status?: "PENDING" | "CONFIRMED" | "CANCELLED";
+  status?: "PENDING" | "RESERVED" | "CONFIRMED" | "CANCELLED" | "COMPLETED";
   seatsSelected?: number;
   totalAmount?: number;
 }
 
-// Transform backend booking data to BookingRowType
-function transformBooking(booking: BackendBooking): BookingRowType {
-  const userName =
-    booking.user.firstName && booking.user.lastName
-      ? `${booking.user.firstName} ${booking.user.lastName}`
-      : booking.user.name || booking.user.email;
+/* ---------------- Transformer ---------------- */
 
-  const roomName = booking.room.title || booking.room.name || "Unknown Room";
+function transformBooking(booking: any): BookingRowType {
+  const userName =
+    booking.user?.firstName && booking.user?.lastName
+      ? `${booking.user.firstName} ${booking.user.lastName}`
+      : booking.user?.name || booking.user?.email || "Unknown User";
+
+  const roomName =
+    booking.room?.title || booking.room?.name || "Unknown Room";
 
   return {
     id: booking.id,
@@ -89,9 +60,14 @@ function transformBooking(booking: BackendBooking): BookingRowType {
     seats: booking.seatsSelected,
     bookingType: booking.bookingType,
     status: booking.status,
-    totalAmount: `₹${booking.totalAmount.toLocaleString()}`,
+    baseAmount: `PKR-${booking.baseAmount.toLocaleString()}`,
+    orderNumber: booking.bookingOrder?.orderNumber || "N/A",
+    bookingOrderId:
+      booking.bookingOrderId || booking.bookingOrder?.id,
   };
 }
+
+/* ---------------- Fetch Bookings ---------------- */
 
 export function useBookings(filters: BookingsFilters) {
   const params = new URLSearchParams({
@@ -103,47 +79,42 @@ export function useBookings(filters: BookingsFilters) {
     limit: String(filters.limit ?? 10),
   });
 
+  if (filters.orderId) {
+    params.set("orderId", filters.orderId);
+  }
+
   return useQuery<BookingResponse>({
     queryKey: ["bookings", params.toString()],
-
     queryFn: async () => {
       const res = await apiClient.get(
-        `/api/bookings?${params.toString()}`
+        `/bookings?${params.toString()}`
       );
-console.log("Bookings fetch response:", res);
+
       const data = res.data.data ?? res.data;
+      const items = (data.items || []).map(transformBooking);
 
       return {
-        items: (data.items || []).map(transformBooking),
-        total: data.total,
-        page: data.page,
-        limit: data.limit,
+        items,
+        total: data.total ?? items.length,
+        page: filters.page ?? 1,
+        limit: filters.limit ?? 10,
       };
     },
     placeholderData: (prev) => prev,
   });
 }
 
+/* ---------------- Create Booking ---------------- */
+
 export function useCreateBooking() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (payload: CreateBookingPayload) => {
-      const res = await fetch(`${API_BASE_URL}/api/bookings`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.message || "Failed to create booking");
-      }
-
-      return res.json();
+      const res = await apiClient.post("/bookings", payload);
+      return res.data;
     },
     onSuccess: () => {
-      // Invalidate both list and single booking queries
       queryClient.invalidateQueries({
         queryKey: ["bookings"],
         exact: false,
@@ -155,6 +126,8 @@ export function useCreateBooking() {
     },
   });
 }
+
+/* ---------------- Update Booking ---------------- */
 
 export function useUpdateBooking() {
   const queryClient = useQueryClient();
@@ -167,21 +140,13 @@ export function useUpdateBooking() {
       id: string;
       payload: UpdateBookingPayload;
     }) => {
-      const res = await fetch(`${API_BASE_URL}/api/bookings/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.message || "Failed to update booking");
-      }
-
-      return res.json();
+      const res = await apiClient.patch(
+        `/bookings/${id}`,
+        payload
+      );
+      return res.data;
     },
     onSuccess: () => {
-      // Invalidate both list and single booking queries
       queryClient.invalidateQueries({
         queryKey: ["bookings"],
         exact: false,
@@ -194,24 +159,19 @@ export function useUpdateBooking() {
   });
 }
 
+/* ---------------- Delete Booking ---------------- */
+
 export function useDeleteBooking() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const res = await fetch(`${API_BASE_URL}/api/bookings/${id}`, {
-        method: "DELETE",
-      });
-
-      if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.message || "Failed to delete booking");
-      }
-
-      return res.json();
+      const res = await apiClient.delete(
+        `/bookings/${id}`
+      );
+      return res.data;
     },
     onSuccess: () => {
-      // Invalidate both list and single booking queries
       queryClient.invalidateQueries({
         queryKey: ["bookings"],
         exact: false,

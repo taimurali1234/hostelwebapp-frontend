@@ -21,31 +21,40 @@ const apiClient: AxiosInstance = axios.create({
  * 4. Retry original request
  */
 apiClient.interceptors.response.use(
-  res => res,
-  async (error: AxiosError<any>) => {
+  res => {
+    console.log("✅ Response OK:", res.config.url);
+    return res;
+  },
+  async (error) => {
+    console.log("🔥 Interceptor HIT:", error.config?.url, error.response?.status);
+    
     const originalRequest = error.config as any;
 
-    const code = error.response?.data?.code;
+    if (originalRequest?.url?.includes("/users/refresh-token")) {
+      console.log("❌ Refresh token failed – logging out");
+      localStorage.removeItem("user");
+      window.location.href = "/login?session=expired";
+      return Promise.reject(error);
+    }
 
-    // 🔥 ONLY refresh if token expired
-    if (
-  error.response?.status === 401 &&
-  !originalRequest._retry
-) {
-  originalRequest._retry = true;
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      console.log("🔁 Trying refresh token...");
+      originalRequest._retry = true;
 
-  try {
-    await apiClient.post("/users/refresh-token");
-    return apiClient(originalRequest);
-  } catch {
-    localStorage.clear();
-    window.location.href = "/login?session=expired";
-  }
-}
+      try {
+        await apiClient.post("/users/refresh-token");
+        console.log("✅ Refresh success – retrying original request");
+        return apiClient(originalRequest);
+      } catch {
+        console.log("❌ Refresh failed – redirecting");
+        localStorage.removeItem("user");
+        window.location.href = "/login?session=expired";
+      }
+    }
 
-    // ❗ other 401s → just reject (no redirect)
     return Promise.reject(error);
   }
 );
+
 
 export default apiClient;

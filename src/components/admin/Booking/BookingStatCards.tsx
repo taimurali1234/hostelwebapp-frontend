@@ -1,6 +1,6 @@
-import { Check, X } from "lucide-react";
+import { Check, X, Clock, AlertCircle, CheckCircle } from "lucide-react";
 
-type StatStatus = "confirmed" | "cancelled" | "none";
+type StatStatus = "pending" | "reserved" | "confirmed" | "cancelled" | "completed" | "none";
 
 interface StatCardProps {
   title: string;
@@ -14,6 +14,22 @@ export default function BookingStatCard({
   status = "none",
 }: StatCardProps) {
   const renderStatusIcon = () => {
+    if (status === "pending") {
+      return (
+        <span className="flex items-center justify-center w-6 h-6 rounded-full bg-yellow-500 text-white">
+          <Clock size={14} strokeWidth={3} />
+        </span>
+      );
+    }
+
+    if (status === "reserved") {
+      return (
+        <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-500 text-white">
+          <AlertCircle size={14} strokeWidth={3} />
+        </span>
+      );
+    }
+
     if (status === "confirmed") {
       return (
         <span className="flex items-center justify-center w-6 h-6 rounded-full bg-green-500 text-white">
@@ -30,6 +46,14 @@ export default function BookingStatCard({
       );
     }
 
+    if (status === "completed") {
+      return (
+        <span className="flex items-center justify-center w-6 h-6 rounded-full bg-purple-500 text-white">
+          <CheckCircle size={14} strokeWidth={3} />
+        </span>
+      );
+    }
+
     return null;
   };
 
@@ -40,7 +64,7 @@ export default function BookingStatCard({
         rounded-xl
         px-6
         py-5
-        min-w-[220px]
+        min-w-55
         bg-white
       "
       style={{ borderColor: "#989FAD" }}

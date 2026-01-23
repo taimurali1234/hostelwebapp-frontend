@@ -31,7 +31,7 @@ export function useRooms(filters: RoomsFilters) {
 
   return usePaginatedQuery<RoomRowType>(
     "rooms",
-    `/api/rooms?${params.toString()}`,
+    `/rooms?${params.toString()}`,
     "rooms"
   );
 }

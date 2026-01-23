@@ -22,7 +22,7 @@ export function useRoomPricing(filters: RoomPricingFilters) {
 
   return usePaginatedQuery<RoomPricingRowType>(
     "roomPricing",
-    `/api/seat-pricing?${params.toString()}`,
+    `/seat-pricing?${params.toString()}`,
     "seatPricings"
   );
 }

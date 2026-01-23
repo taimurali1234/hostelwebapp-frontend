@@ -44,7 +44,7 @@ export default function UpdateBookingModal({
   const { data, isLoading } = useSingleQuery<SingleBookingApiResponse>(
     "booking",
     bookingId,
-    "/api/bookings",
+    "/bookings",
     open
   );
 

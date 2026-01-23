@@ -31,7 +31,7 @@ export default function EditUserModal({
   const { data, isLoading } = useSingleQuery<SingleUserApiResponse>(
     "user",
     userId,
-    "/api/users",
+    "/users",
     open
   );
   console.log(data)

@@ -7,6 +7,7 @@ export interface RoomRowType {
   floor: string;
   status: "Available" | "Booked";
   bookedSeats: number;
+  availableSeats: number;
   type: string;
   price?: string;
   shortTermPrice?: number | string;
@@ -27,7 +28,7 @@ export function RoomRow({ room, onView, onEdit, onDelete, onMedia }: RoomRowProp
     <tr className="border-b border-gray-300 last:border-none">
       <td className="px-6 py-4">{room.title}</td>
       <td className="px-6 py-4 text-gray-600">{room.beds}</td>
-      <td className="px-6 py-4 text-gray-600">{room.floor}</td>
+      {/* <td className="px-6 py-4 text-gray-600">{room.floor}</td> */}
 
       <td className="px-6 py-4">
         <span
@@ -42,6 +43,7 @@ export function RoomRow({ room, onView, onEdit, onDelete, onMedia }: RoomRowProp
       </td>
 
       <td className="px-6 py-4 text-gray-600">{room.bookedSeats}</td>
+      <td className="px-6 py-4 text-gray-600">{room.availableSeats}</td>
       <td className="px-6 py-4 text-gray-600">{room.type}</td>
       <td className="px-6 py-4 text-gray-600">
   {room.shortTermPrice || room.price

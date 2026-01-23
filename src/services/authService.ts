@@ -8,13 +8,13 @@ export const register = async (data: {
   phone: string;
   address?: string;
 }) => {
-  const response = await apiClient.post("/api/users/register", data);
+  const response = await apiClient.post("/users/register", data);
   return response.data;
 };
 
 
 export const loginService = async (email: string, password: string) => {
-  const response = await apiClient.post("/api/users/login", {
+  const response = await apiClient.post("/users/login", {
     email,
     password,
   });
@@ -22,33 +22,34 @@ export const loginService = async (email: string, password: string) => {
 };
 
 
-export const logout = async () => {
-  await apiClient.post("/api/users/logout");
+// services/authService.ts
+export const logout = () => {
+  localStorage.removeItem("user");
 };
 
 
 export const getUserProfile = async () => {
-  const response = await apiClient.get("/api/users/me");
+  const response = await apiClient.get("/users/me");
   return response.data;
 };
 
 
 export const verifyEmail = async (token: string, email: string) => {
   const response = await apiClient.get(
-    `/api/users/verifyEmail?token=${token}&email=${email}`
+    `/users/verifyEmail?token=${token}&email=${email}`
   );
   return response.data;
 };
 
 
 export const resendVerificationEmail = async (email: string) => {
-  const response = await apiClient.post("/api/users/resendEmail", { email });
+  const response = await apiClient.post("/users/resendEmail", { email });
   return response.data;
 };
 
 
 export const forgotPassword = async (email: string) => {
-  const response = await apiClient.post("/api/users/forgotPassword", { email });
+  const response = await apiClient.post("/users/forgotPassword", { email });
   return response.data;
 };
 
@@ -59,7 +60,7 @@ export const resetPassword = async (
   newPassword: string,
   confirmPassword: string
 ) => {
-  const response = await apiClient.post("/api/users/resetPassword", {
+  const response = await apiClient.post("/users/resetPassword", {
     token,
     email,
     newPassword,

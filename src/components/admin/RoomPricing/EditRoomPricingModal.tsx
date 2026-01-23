@@ -49,7 +49,7 @@ export default function EditRoomPricingModal({
   const { data, isLoading } = useSingleQuery<SinglePricingApiResponse>(
     "roomPricing",
     pricingId,
-    "/api/seat-pricing",
+    "/seat-pricing",
     open
   );
   console.log("EditRoomPricingModal - pricingId:", pricingId);
