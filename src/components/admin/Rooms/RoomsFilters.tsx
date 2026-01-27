@@ -24,7 +24,7 @@ export function RoomFilters({ filters, onChange, onClear }: RoomFiltersProps) {
 
     const createRoomMutation = useCreateMutation<CreateRoomForm>(
       "rooms",
-      "/api/rooms"
+      "/rooms"
     );
 
 const handleCreateRoom = async (data: CreateRoomForm) => {
