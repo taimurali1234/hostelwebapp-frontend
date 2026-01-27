@@ -28,7 +28,7 @@ export function NotificationsFilters({
   const [open, setOpen] = useState(false);
   const createNotificationMutation = useCreateMutation<CreateNotificationForm>(
     "notifications",
-    "/api/notifications"
+    "/notifications"
   );
 
   const handleCreateNotification = async (
