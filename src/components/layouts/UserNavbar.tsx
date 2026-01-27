@@ -1,14 +1,18 @@
 import { useEffect, useRef, useState } from "react";
-import { Bell, User, LogOut, Menu, X } from "lucide-react";
+import {
+  Bell,
+  User,
+  LogOut,
+  Menu,
+  X,
+  ShoppingCart,
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Button from "../common/Button";
 import { useAuth } from "../../context/AuthContext";
-import { Link, useLocation } from "react-router";
-import { useNavigate } from "react-router";
-import { ShoppingCart } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router";
 import { logout } from "../../services/authService";
 import { useBooking } from "@/context/BookingContext";
-
 
 interface Notification {
   id: string;
@@ -20,16 +24,12 @@ export default function UserNavbar() {
   const { user, setUser } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-const { cartItems = [] } = useBooking();
-  console.log("Current bookings in navbar:", cartItems);
-
-
+  const { cartItems = [] } = useBooking();
 
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
   const [showCart, setShowCart] = useState(false);
-
 
   const [notifications, setNotifications] = useState<Notification[]>([
     { id: "1", title: "New booking received", read: false },
@@ -38,46 +38,60 @@ const { cartItems = [] } = useBooking();
 
   const notifRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
+  const cartRef = useRef<HTMLDivElement>(null);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
+  /* -------------------- CLICK OUTSIDE LOGIC -------------------- */
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
+      const target = e.target as Node;
+
+      if (notifRef.current && !notifRef.current.contains(target)) {
         setShowNotifications(false);
       }
-      if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
+
+      if (profileRef.current && !profileRef.current.contains(target)) {
         setShowProfile(false);
+      }
+
+      if (cartRef.current && !cartRef.current.contains(target)) {
+        setShowCart(false);
       }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    return () =>
+      document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  /* -------------------- LOGOUT -------------------- */
   const handleLogout = async () => {
-  try {
-    await logout(); // backend logout (clear cookies / session)
-    setShowProfile(false);
-
-  } catch (err) {
-    console.error("Logout failed", err);
-  } finally {
-    setUser(null);       // clear frontend auth state
-    navigate("/login"); // redirect to login page
-  }
-};
-
+    try {
+      await logout();
+      setShowProfile(false);
+    } catch (err) {
+      console.error("Logout failed", err);
+    } finally {
+      setUser(null);
+      navigate("/login");
+    }
+  };
 
   const openNotifications = () => {
     setShowNotifications((p) => !p);
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    setShowCart(false);
+    setNotifications((prev) =>
+      prev.map((n) => ({ ...n, read: true }))
+    );
   };
 
   const navLinkClass = (path: string) =>
-    `text-sm font-medium transition cursor-pointer
-     ${location.pathname === path 
-       ? "text-green-700" 
-       : "text-gray-700 hover:text-green-700"}`;
+    `text-sm font-medium transition cursor-pointer ${
+      location.pathname === path
+        ? "text-green-700"
+        : "text-gray-700 hover:text-green-700"
+    }`;
 
   return (
     <nav className="fixed top-0 w-full z-50 bg-[#f3f7f4] border-b border-green-100">
@@ -105,11 +119,11 @@ const { cartItems = [] } = useBooking();
           <div className="relative" ref={notifRef}>
             <button
               onClick={openNotifications}
-              className="relative p-2 rounded-full hover:bg-green-100 transition cursor-pointer"
+              className="relative p-2 rounded-full cursor-pointer hover:bg-green-100"
             >
               <Bell size={20} />
               {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-500 text-white text-xs flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
                   {unreadCount}
                 </span>
               )}
@@ -121,78 +135,119 @@ const { cartItems = [] } = useBooking();
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
-                  className="absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-xl overflow-hidden border"
+                  className="absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-xl border overflow-hidden"
                 >
-                  <div className="px-4 py-3 font-semibold text-gray-700 border-b">
+                  <div className="px-4 py-3 font-semibold border-b">
                     Notifications
                   </div>
 
-                  {notifications.length === 0 ? (
-                    <p className="p-4 text-sm text-gray-500 text-center">
-                      No notifications
-                    </p>
-                  ) : (
-                    notifications.map((n) => (
-                      <div
-                        key={n.id}
-                        className={`px-4 py-3 text-sm border-b last:border-none 
-                        ${n.read ? "bg-gray-50" : "bg-green-50"}
-                        hover:bg-green-100 transition cursor-pointer`}
+                  {notifications.map((n) => (
+                    <div
+                      key={n.id}
+                      className="px-4 py-3 text-sm border-b last:border-none hover:bg-green-100 cursor-pointer"
+                    >
+                      {n.title}
+                    </div>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* Cart */}
+          <div className="relative" ref={cartRef}>
+            <button
+              onClick={() => {
+                setShowCart((p) => !p);
+                setShowProfile(false);
+                setShowNotifications(false);
+              }}
+              className="relative p-2 rounded-full cursor-pointer hover:bg-green-100"
+            >
+              <ShoppingCart size={20} />
+              {cartItems.length > 0 && (
+                <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                  {cartItems.length}
+                </span>
+              )}
+            </button>
+
+            <AnimatePresence>
+              {showCart && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.98 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute right-0 mt-3 w-80 bg-white rounded-xl shadow-xl border p-3"
+                >
+                  {cartItems.length === 0 ? (
+                    <div className="py-8 text-center">
+                      <ShoppingCart
+                        className="mx-auto text-gray-300 mb-3"
+                        size={40}
+                      />
+                      <p className="text-sm text-gray-500">
+                        Your cart is empty
+                      </p>
+                      <Link
+                        to="/rooms"
+                        onClick={() => setShowCart(false)}
+                        className="inline-block mt-3 text-green-600 text-sm font-semibold hover:underline"
                       >
-                        {n.title}
-                      </div>
-                    ))
+                        Browse Rooms
+                      </Link>
+                    </div>
+                  ) : (
+                    <>
+                      {cartItems.slice(0, 2).map((b, i) => (
+                        <div
+                          key={i}
+                          className="flex gap-3 border-b pb-2 mb-2"
+                        >
+                          <img
+                            src={
+                              b.image?.url ||
+                              "https://via.placeholder.com/150?text=No+Image"
+                            }
+                            className="w-16 h-16 rounded object-cover"
+                          />
+                          <div>
+                            <p className="font-semibold text-sm">
+                              {b.room.title}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              {b.stayType}
+                            </p>
+                            <p className="text-green-600 font-bold">
+                              PKR {b.total}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+
+                      <Link
+                        to="/bookings"
+                        onClick={() => setShowCart(false)}
+                        className="block text-center text-gray-600 hover:text-green-600 font-semibold text-sm mt-2"
+                      >
+                        Show All Bookings
+                      </Link>
+                    </>
                   )}
                 </motion.div>
               )}
             </AnimatePresence>
           </div>
 
-          <div className="relative">
-  <button onClick={() => setShowCart(p => !p)} className="p-2 rounded-full hover:bg-green-100">
-    <ShoppingCart size={20} />
-    {cartItems?.length > 0 && (
-      <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-        {cartItems.length || 0}
-      </span>
-    )}
-  </button>
-  {showCart && (
-  <div className="absolute right-0 mt-3 w-80 bg-white rounded-xl shadow-xl border p-3">
-    {cartItems?.slice(0, 2).map((b, i) => (
-      <div key={i} className="flex gap-3 border-b pb-2 mb-2">
-        <img   src={b.image?.url || "https://via.placeholder.com/150?text=No+Image"}
- className="w-16 h-16 rounded object-cover" />
-        <div>
-          <p className="font-semibold text-sm">{b.room.title}</p>
-          <p className="text-xs text-gray-500">{b.stayType}</p>
-          <p className="text-green-600 font-bold">
-            PKR {b.total}
-          </p>
-        </div>
-      </div>
-    ))}
-
-    {cartItems?.length > 0 && (
-      <Link
-        to="/bookings"
-        className="block text-center text-gray-600 hover:text-green-600 font-semibold text-sm mt-2"
-      >
-        Show All Bookings
-      </Link>
-    )}
-  </div>
-)}
-
-</div>
-
-
-
           {/* Profile */}
           <div className="relative" ref={profileRef}>
             <button
-              onClick={() => setShowProfile((p) => !p)}
-              className="p-2 rounded-full hover:bg-green-100 transition cursor-pointer"
+              onClick={() => {
+                setShowProfile((p) => !p);
+                setShowCart(false);
+              }}
+              className="p-2 rounded-full cursor-pointer hover:bg-green-100"
             >
               <User size={20} />
             </button>
@@ -210,9 +265,8 @@ const { cartItems = [] } = useBooking();
                   </div>
 
                   <button
-onClick={handleLogout}
-                    className="w-full flex items-center gap-2 px-4 py-3 text-sm 
-                    text-red-600 hover:bg-red-50 cursor-pointer"
+                    onClick={handleLogout}
+                    className="w-full flex cursor-pointer items-center gap-2 px-4 py-3 text-sm text-red-600 hover:bg-red-50"
                   >
                     <LogOut size={16} />
                     Logout
@@ -222,7 +276,6 @@ onClick={handleLogout}
             </AnimatePresence>
           </div>
 
-          {/* Sign In */}
           {!user && (
             <Button
               label="Sign In"
@@ -230,10 +283,10 @@ onClick={handleLogout}
             />
           )}
 
-          {/* Mobile Menu Toggle */}
+          {/* Mobile Toggle */}
           <button
             onClick={() => setMobileMenu((p) => !p)}
-            className="md:hidden p-2 rounded-lg hover:bg-green-100 cursor-pointer"
+            className="md:hidden p-2 rounded-lg hover:bg-green-100"
           >
             {mobileMenu ? <X /> : <Menu />}
           </button>
@@ -249,14 +302,13 @@ onClick={handleLogout}
             exit={{ height: 0 }}
             className="md:hidden bg-[#f3f7f4] border-t"
           >
-            <div className="flex flex-col items-center px-6 py-6 gap-4 text-center">
+            <div className="flex flex-col items-center px-6 py-6 gap-4">
               <Link to="/" className={navLinkClass("/")}>Home</Link>
               <Link to="/rooms" className={navLinkClass("/rooms")}>Rooms</Link>
               <Link to="/about" className={navLinkClass("/about")}>About</Link>
               <Link to="/contact" className={navLinkClass("/contact")}>Contact</Link>
               <Link to="/privacy" className={navLinkClass("/privacy")}>Privacy</Link>
               <Link to="/terms" className={navLinkClass("/terms")}>Terms</Link>
-
             </div>
           </motion.div>
         )}

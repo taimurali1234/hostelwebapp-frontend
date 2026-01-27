@@ -15,13 +15,19 @@ import apiClient from "@/services/apiClient";
 import { toast } from "react-toastify";
 
 const BookingPage = () => {
+
   const { cartItems, updateCartItem, removeFromCart, clearCart } = useBooking();
   const { user } = useAuth();
   const navigate = useNavigate();
 
   const subtotal = cartItems.reduce((sum, item) => sum + (item.total || 0), 0);
+const seatSignature = cartItems
+  .map(item => `${item.id}:${item.selectedSeats}:${item.total}`)
+  .join("|");
 
   const [coupon, setCoupon] = useState("");
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+
   const [preview, setPreview] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [confirmingBooking, setConfirmingBooking] = useState(false);
@@ -35,7 +41,13 @@ const BookingPage = () => {
 
   /* ---------------- Fetch Room Availability on Mount or Cart Change -------- */
   useEffect(() => {
-    const fetchAvailability = async () => {
+    
+
+    if (cartItems.length > 0) {
+      fetchAvailability();
+    }
+  }, [cartItems.length]);
+  const fetchAvailability = async () => {
       const roomIds = cartItems.map(item => item.roomId);
       
       for (const roomId of roomIds) {
@@ -45,6 +57,7 @@ const BookingPage = () => {
         try {
           const response = await apiClient.get(`/rooms/${roomId}`);
           const room = response.data.data;
+          console.log(`Fetched availability for room ${roomId}:`, room);  
           setRoomAvailability(prev => ({
             ...prev,
             [roomId]: {
@@ -60,17 +73,17 @@ const BookingPage = () => {
       }
     };
 
-    if (cartItems.length > 0) {
-      fetchAvailability();
-    }
-  }, [cartItems.length]);
-
   /* ---------------- Auto-call Preview on Page Load ---------------- */
   useEffect(() => {
-    if (cartItems.length > 0 && !hasInvalidDates) {
-      handlePreview(false);
-    }
-  }, []);
+  if (cartItems.length === 0) return;
+
+  const timeout = setTimeout(() => {
+    handlePreview(false); // coupon tabhi lagega jab Apply click hoga
+  }, 300);
+
+  return () => clearTimeout(timeout);
+}, [seatSignature]);
+
 
   /* ---------------- Seat Change with Availability Check -------- */
   const handleSeatChange = (
@@ -106,7 +119,6 @@ const BookingPage = () => {
       total: seats * price,
     });
 
-    setPreview(null); // reset preview if user changes seats
   };
 
   /* ---------------- Date Change ---------------- */
@@ -116,7 +128,6 @@ const BookingPage = () => {
     value: string
   ) => {
     updateCartItem(id, { [field]: value });
-    setPreview(null); // reset preview if user changes dates
   };
 
   /* ---------------- Validation ---------------- */
@@ -128,27 +139,27 @@ const BookingPage = () => {
 
   /* ---------------- Preview API ---------------- */
   const handlePreview = async (applyCoupon = false) => {
-    if (hasInvalidDates) {
-      toast.error("Please select required dates for all items");
-      return;
-    }
+  if (cartItems.length === 0) return;
+  try {
+    setLoading(true);
+    setError(null);
 
-    try {
-      setLoading(true);
-      setError(null);
+    const res = await apiClient.post("/bookings/preview", {
+      price: subtotal,
+      couponCode: coupon?.trim() ? coupon : undefined,
+    });
+    
 
-      const res = await apiClient.post("/bookings/preview", {
-        price: subtotal,
-        couponCode: applyCoupon ? coupon : undefined,
-      });
+    setPreview(res.data.data);
+    console.log("Preview Data:", res.data.data);
+  } catch (err: any) {
+    setError(err.response?.data?.message || "Preview failed");
+    setPreview(null);
+  } finally {
+    setLoading(false);
+  }
+};
 
-      setPreview(res.data.data);
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Preview failed");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   /* ---------------- Confirm Booking Function ---------------- */
   const handleConfirmBooking = async () => {
@@ -163,10 +174,7 @@ const BookingPage = () => {
     return;
   }
 
-  if (!preview) {
-    toast.error("Please calculate total amount first");
-    return;
-  }
+ 
 
   setConfirmingBooking(true);
 
@@ -379,7 +387,7 @@ const BookingPage = () => {
                                   <input
                                     type="number"
                                     min="1"
-                                    max={item.room.beds}
+                                    max={item.room.availableSeats}
                                     value={item.selectedSeats}
                                     onChange={(e) =>
                                       handleSeatChange(
@@ -398,14 +406,14 @@ const BookingPage = () => {
                                       handleSeatChange(
                                         item.id,
                                         item.selectedSeats + 1,
-                                        item.room.beds,
+                                        item.room.availableSeats,
                                         item.priceWithTax,
                                         item.roomId
                                       )
                                     }
                                     disabled={
-                                      item.selectedSeats >= item.room.beds ||
-                                      item.selectedSeats >= (roomAvailability[item.roomId]?.availableSeats || item.room.beds)
+                                      item.selectedSeats >= item.room.availableSeats ||
+                                      item.selectedSeats >= (roomAvailability[item.roomId]?.availableSeats || item.room.availableSeats)
                                     }
                                     className="p-1 hover:bg-white rounded transition disabled:opacity-50 cursor-pointer"
                                   >
@@ -414,12 +422,12 @@ const BookingPage = () => {
                                 </div>
 
                                 <span className="text-xs text-gray-600">
-                                  Max: {item.room.beds}
+                                  Max: {item.room.availableSeats} seat{item.room.availableSeats !== 1 ? 's' : ''} available 
                                 </span>
                               </div>
 
                               {/* Availability Info */}
-                              <div className="text-xs text-gray-600 pl-2">
+                              {/* <div className="text-xs text-gray-600 pl-2">
                                 {availabilityLoading[item.roomId] ? (
                                   <span className="flex items-center gap-1">
                                     <Loader size={12} className="animate-spin" />
@@ -432,7 +440,7 @@ const BookingPage = () => {
                                 ) : (
                                   <span className="text-gray-500">Availability info not loaded</span>
                                 )}
-                              </div>
+                              </div> */}
                             </div>
 
                             <div className="flex items-center justify-between">
@@ -472,15 +480,7 @@ const BookingPage = () => {
                     </span>
                   </div>
 
-                  {/* Calculate Button */}
-                  {!preview && (
-                    <button
-                      onClick={() => handlePreview(false)}
-                      className="w-full bg-blue-600 text-white py-2.5 sm:py-3 rounded-lg font-semibold text-sm sm:text-base cursor-pointer"
-                    >
-                      {loading ? "Calculating..." : "Calculate Total Amount"}
-                    </button>
-                  )}
+                 
 
                   {/* Error */}
                   {error && (
@@ -493,52 +493,56 @@ const BookingPage = () => {
                   )}
 
                   {/* Tax + Total */}
-                  {preview && (
-                    <>
+                  
                       <div className="flex justify-between items-center bg-blue-50 px-3 py-2 rounded-lg border border-blue-100">
                         <span className="text-xs sm:text-sm text-gray-700 font-medium">
-                          Tax ({preview.taxPercent}%)
+    Tax ({preview?.taxPercent ?? 0}%)
                         </span>
                         <span className="text-base sm:text-lg font-bold text-blue-600">
-                          PKR {preview.tax.toLocaleString()}
+    PKR {(preview?.tax ?? 0).toLocaleString()}
                         </span>
                       </div>
 
                       {/* Coupon Discount */}
-                      {preview.couponApplied && preview.couponDiscount > 0 && (
-                        <div className="flex justify-between items-center bg-green-50 px-3 py-2 rounded-lg border border-green-200">
-                          <span className="text-xs sm:text-sm text-green-700 font-medium">
-                            Coupon ({coupon}) -
-                          </span>
-                          <span className="text-base sm:text-lg font-bold text-green-600">
-                            - PKR {preview.couponDiscount.toLocaleString()}
-                          </span>
-                        </div>
-                      )}
+                      
+                        {preview?.couponApplied && preview.couponDiscount > 0 && (
+  <div className="flex justify-between items-center bg-green-50 px-3 py-2 rounded-lg border border-green-200">
+    <span className="text-xs sm:text-sm text-green-700 font-medium">
+      Coupon ({coupon})
+    </span>
+    <span className="text-base sm:text-lg font-bold text-green-600">
+      - PKR {preview.couponDiscount.toLocaleString()}
+    </span>
+  </div>
+)}
+                      
 
                       <div className="bg-linear-to-br from-slate-50 to-blue-50 p-4 sm:p-6 rounded-xl border-2 border-blue-200">
                         <p className="text-gray-700 text-xs sm:text-sm font-medium">
                           Total Amount
                         </p>
                         <p className="text-2xl sm:text-4xl font-bold text-blue-600">
-                          PKR {preview.totalAmount.toLocaleString()}
+                          PKR {preview?.totalAmount.toLocaleString() ?? subtotal.toLocaleString()}
                         </p>
                       </div>
 
                       {/* Coupon Applied Success Message */}
-                      {preview.couponApplied && (
-                        <div className="bg-green-50 p-3 sm:p-4 rounded-lg border border-green-200 flex gap-2 sm:gap-3">
-                          <div className="text-green-600 shrink-0">✓</div>
-                          <p className="text-xs sm:text-sm text-green-700 font-medium">
-                            Coupon code "{coupon}" applied successfully! You saved PKR {preview.couponDiscount.toLocaleString()}
-                          </p>
-                        </div>
-                      )}
-                    </>
-                  )}
+                      
+                       {preview?.couponApplied && preview.couponDiscount > 0 && (
+  <div className="bg-green-50 p-3 sm:p-4 rounded-lg border border-green-200 flex gap-2 sm:gap-3">
+    <div className="text-green-600 shrink-0">✓</div>
+    <p className="text-xs sm:text-sm text-green-700 font-medium">
+      Coupon code "{coupon}" applied successfully! You saved PKR{" "}
+      {preview.couponDiscount.toLocaleString()}.
+    </p>
+  </div>
+)}
+                    
+                  
+                
 
                   {/* Coupon */}
-                  {preview && (
+                  
                     <div className="space-y-2 sm:space-y-3">
                       <label className="block text-xs sm:text-sm font-semibold text-gray-900">
                         Have a Coupon?
@@ -561,23 +565,34 @@ const BookingPage = () => {
                         </button>
                       </div>
                     </div>
-                  )}
+                  
 
                   {/* Confirm Booking */}
-                  <button
-                    onClick={handleConfirmBooking}
-                    disabled={!preview || confirmingBooking}
-                    className="w-full bg-linear-to-r from-green-600 to-emerald-600 text-white py-2.5 sm:py-3.5 rounded-lg font-bold disabled:opacity-50 text-sm sm:text-base cursor-pointer flex items-center justify-center gap-2"
-                  >
-                    {confirmingBooking ? (
-                      <>
-                        <Loader size={18} className="animate-spin" />
-                        Confirming...
-                      </>
-                    ) : (
-                      "Confirm Booking"
-                    )}
-                  </button>
+                 <button
+  onClick={() => {
+    if (hasInvalidDates) {
+      toast.error("Please select required dates for all items");
+      return;
+    }
+    setShowConfirmModal(true);
+  }}
+  disabled={!preview || confirmingBooking}
+  className={`w-full py-3 rounded-lg font-bold flex items-center justify-center gap-2
+    ${!preview || confirmingBooking
+      ? "bg-gray-300 cursor-not-allowed"
+      : "bg-linear-to-r from-green-600 to-emerald-600 cursor-pointer"}
+  `}
+>
+  {confirmingBooking ? (
+    <>
+      <Loader size={18} className="animate-spin" />
+      Confirming...
+    </>
+  ) : (
+    "Confirm Booking"
+  )}
+</button>
+
 
                   {/* Clear Cart */}
                   <button
@@ -591,6 +606,41 @@ const BookingPage = () => {
               </div>
             </div>
           )}
+
+          {showConfirmModal && (
+  <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+    <div className="bg-white rounded-2xl shadow-xl p-6 max-w-md w-full space-y-4">
+      <h3 className="text-lg font-bold text-gray-900">
+        Confirm Booking?
+      </h3>
+
+      <p className="text-sm text-gray-600">
+        Are you sure you want to confirm this booking? Once you continue,
+        you won’t be able to update your booking. You may only cancel it
+        within the allowed time frame.
+      </p>
+
+      <div className="flex gap-3 pt-2">
+        <button
+          onClick={() => setShowConfirmModal(false)}
+          className="flex-1 border px-4 py-2 rounded-lg cursor-pointer hover:bg-gray-50"
+        >
+          Cancel
+        </button>
+
+        <button
+          onClick={() => {
+            setShowConfirmModal(false);
+            handleConfirmBooking();
+          }}
+          className="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-green-700"
+        >
+          Yes, Continue
+        </button>
+      </div>
+    </div>
+  </div>
+)}
 
           {/* Clear Modal */}
           {confirmClear && (
@@ -640,7 +690,6 @@ const BookingPage = () => {
                     onClick={() => {
                       removeFromCart(deleteItemId);
                       setDeleteItemId(null);
-                      setPreview(null); // Reset preview when item is deleted
                       toast.success("Item removed from cart");
                     }}
                     className="flex-1 bg-red-600 text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-red-700 transition"

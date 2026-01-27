@@ -6,7 +6,9 @@ export interface CartItem {
   room: {
     title: string;
     description?: string;
-    beds: number; // Number of beds in the room (max seats allowed)
+    beds: number;
+    availableSeats: number;
+    bookedSeats: number; // Number of beds in the room (max seats allowed)
   };
   image?: {
     url: string;

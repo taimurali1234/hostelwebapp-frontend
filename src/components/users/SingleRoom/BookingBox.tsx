@@ -172,6 +172,9 @@ const BookingBox: React.FC<Props> = ({ room }) => {
             room: {
               title: room.title,
               beds: room.beds,
+              availableSeats: room.availableSeats,
+              bookedSeats: room.beds - room.availableSeats,
+              description: room.description,
             },
             image: room.images?.[0],
             stayType,
