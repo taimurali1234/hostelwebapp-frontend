@@ -90,6 +90,7 @@ export default function Notifications() {
   );
 
   const notifications = data?.items ?? [];
+  console.log("Notifications list:", notifications);  
   const total = data?.total ?? 0;
 
   const handleCreateSubmit = (formData: CreateNotificationForm) => {

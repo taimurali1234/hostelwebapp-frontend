@@ -1,3 +1,4 @@
+import { disconnectSocket, initializeSocket } from "@/services/socket";
 import  {
   createContext,
   useContext,
@@ -48,6 +49,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       localStorage.setItem("user", JSON.stringify(user));
     } else {
       localStorage.removeItem("user");
+
     }
     setUserState(user);
   };

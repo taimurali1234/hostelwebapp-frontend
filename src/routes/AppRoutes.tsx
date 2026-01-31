@@ -13,6 +13,8 @@ import Analytics from "../Pages/admin/Analytics";
 import Login from "../Pages/users/Login";
 import Signup from "../Pages/users/Signup";
 import ResetPassword from "../components/auth/ResetPassword";
+import OrderDetailsPage from "../Pages/users/OrderDetails";
+import OrderHistoryPage from "../Pages/users/OrderHistory";
 
 import ProtectedRoute from "./ProtectedRoutes";
 import PublicRoute from "./PublicRoutes";
@@ -110,6 +112,33 @@ const routes = {
     />
   ),
 },
+{
+  path: "/orders/:orderId",
+  element: (
+    <ProtectedRoute
+      element={OrderDetailsPage}
+      allowedRoles={["USER", "ADMIN", "COORDINATOR"]}
+    />
+  ),
+},
+{
+  path: "/my-orders",
+  element: (
+    <ProtectedRoute
+      element={OrderHistoryPage}
+      allowedRoles={["USER", "ADMIN", "COORDINATOR"]}
+    />
+  ),
+},
+// {
+//   path: "/orders",
+//   element: (
+//     <ProtectedRoute
+//       element={OrdersPage}
+//       allowedRoles={["USER", "ADMIN", "COORDINATOR"]}
+//     />
+//   ),
+// },
     {
       path: "/login",
       element: <Login />,

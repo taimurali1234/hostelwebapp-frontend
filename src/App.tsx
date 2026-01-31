@@ -1,62 +1,65 @@
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import routes from "./routes/AppRoutes";
-import {   type ReactElement } from "react";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { AuthProvider } from "./context/AuthContext";
-import { BookingProvider } from "./context/BookingContext";
+  import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+  import routes from "./routes/AppRoutes";
+  import {   type ReactElement } from "react";
+  import { ToastContainer } from "react-toastify";
+  import "react-toastify/dist/ReactToastify.css";
+  import { AuthProvider } from "./context/AuthContext";
+  import { BookingProvider } from "./context/BookingContext";
+  import { NotificationProvider } from "./context/NotificationContext";
 
-export interface RouteType {
-  path: string;
-  element: ReactElement;
-}
+  export interface RouteType {
+    path: string;
+    element: ReactElement;
+  }
 
-type RouteGroup = RouteType[];
+  type RouteGroup = RouteType[];
 
-interface AppRoutes {
-  public: RouteGroup;
-  admin: RouteGroup;
-}
+  interface AppRoutes {
+    public: RouteGroup;
+    admin: RouteGroup;
+  }
 
-const typedRoutes = routes as AppRoutes;
+  const typedRoutes = routes as AppRoutes;
 
-const AppContent = () => {
-  
-  const renderRoutes = (routesArray: RouteType[]) =>
-    routesArray.map(({ path, element }) => (
-      <Route key={path} path={path} element={element} />
-    ));
+  const AppContent = () => {
+    
+    const renderRoutes = (routesArray: RouteType[]) =>
+      routesArray.map(({ path, element }) => (
+        <Route key={path} path={path} element={element} />
+      ));
 
-  return (
-    <div className="App">
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        closeOnClick
-        pauseOnHover
-        draggable
-      />
-      <main>
-        <Routes>
-          {renderRoutes(typedRoutes.public)}
-          {renderRoutes(typedRoutes.admin)}
-        </Routes>
-      </main>
-    </div>
-  );
-};
+    return (
+      <div className="App">
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          closeOnClick
+          pauseOnHover
+          draggable
+        />
+        <main>
+          <Routes>
+            {renderRoutes(typedRoutes.public)}
+            {renderRoutes(typedRoutes.admin)}
+          </Routes>
+        </main>
+      </div>
+    );
+  };
 
-function App() {
-  return (
-    <Router>
-      <AuthProvider>
-        <BookingProvider>
-        <AppContent />
-        </BookingProvider>
-      </AuthProvider>
-    </Router>
-  );
-}
+  function App() {
+    return (
+      <Router>
+        <AuthProvider>
+          <BookingProvider>
+            <NotificationProvider>
+          <AppContent />
+          </NotificationProvider>
+          </BookingProvider>
+        </AuthProvider>
+      </Router>
+    );
+  }
 
-export default App;
+  export default App;

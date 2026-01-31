@@ -112,39 +112,39 @@ const res = await loginService(
   };
 
   const handleResendVerification = async () => {
-    if (!resendEmail) {
-      setError("Email is required");
-      return;
-    }
+  if (!resendEmail) {
+    setError("Email is required");
+    return;
+  }
 
-    try {
-      setResendLoading(true);
+  try {
+    setResendLoading(true);
 
-      const response = await resendVerificationEmail(resendEmail);
-        
+    const response = await resendVerificationEmail(resendEmail);
 
-      const data = await response.json();
+    // ✅ Axios already gives parsed data
+    const data = response.data;
 
-      if (!response.ok) {
-        setError(data.message || "Failed to resend verification link");
-        return;
-      }
+    setSuccess("Verification link sent! Please check your email.");
+    setToast("✉️ Verification link resent to your email!");
+    setShowResendModal(false);
 
-      setSuccess("Verification link sent! Please check your email.");
-      setToast("✉️ Verification link resent to your email!");
-      setShowResendModal(false);
+    setTimeout(() => {
+      setSuccess("");
+      setToast("");
+    }, 3000);
 
-      setTimeout(() => {
-        setSuccess("");
-        setToast("");
-      }, 3000);
-    } catch (err) {
-      setError("Failed to resend verification link. Please try again.");
-      console.error(err);
-    } finally {
-      setResendLoading(false);
-    }
-  };
+  } catch (err: any) {
+    const backendMessage =
+      err?.response?.data?.message ||
+      "Failed to resend verification link. Please try again.";
+
+    setError(backendMessage);
+  } finally {
+    setResendLoading(false);
+  }
+};
+
   
 
   return (
@@ -247,8 +247,19 @@ const res = await loginService(
 
           {/* Error Message */}
           {error && (
-            <div className="px-4 py-3 rounded-lg bg-red-500/10 border border-red-500/50 text-red-300 text-sm">
-              {error}
+            <div className="px-4 py-3 rounded-lg bg-red-500/10 border border-red-500/50 text-red-300 text-sm space-y-3">
+              <p>{error}</p>
+              {error.toLowerCase().includes("verify") && (
+                <button
+                  onClick={() => {
+                    setResendEmail(form.email);
+                    setShowResendModal(true);
+                  }}
+                  className="w-full mt-3 px-3 py-2 rounded-lg bg-red-600/40 hover:bg-red-600/60 border border-red-500/70 text-red-200 font-semibold transition-colors text-sm"
+                >
+                  📧 Resend Verification Email
+                </button>
+              )}
             </div>
           )}
 

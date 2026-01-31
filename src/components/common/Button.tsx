@@ -1,10 +1,12 @@
 import clsx from "clsx";
+import { useNavigate } from "react-router-dom";
 
 interface ButtonProps {
   label: string;
   onClick?: () => void;
   variant?: "primary" | "secondary";
   className?: string;
+  href?: string;
 }
 
 export default function Button({
@@ -12,9 +14,11 @@ export default function Button({
   onClick,
   variant = "primary",
   className = "",
+  href,
 }: ButtonProps) {
+  const navigate = useNavigate();
   const baseStyles =
-    "px-6 py-3 rounded-lg font-medium transition-all duration-300";
+    "px-6 py-3 rounded-lg font-medium transition-all duration-300 cursor-pointer";
 
   const variants = {
     primary:
@@ -23,9 +27,24 @@ export default function Button({
       "bg-white text-gray-900 hover:bg-gray-100 border border-gray-200",
   };
 
+  const handleClick = () => {
+    if (onClick) {
+      onClick();
+    } else if (href) {
+      navigate(href);
+    } else {
+      // Auto-navigate based on label
+      if (label === "Book a Room") {
+        navigate("/bookings");
+      } else if (label === "View Rooms") {
+        navigate("/rooms");
+      }
+    }
+  };
+
   return (
     <button
-      onClick={onClick}
+      onClick={handleClick}
       className={clsx(baseStyles, variants[variant], className)}
     >
       {label}

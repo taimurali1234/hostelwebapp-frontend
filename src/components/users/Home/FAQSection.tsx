@@ -68,7 +68,7 @@ const FAQSection: React.FC = () => {
                   setOpenId(openId === faq.id ? null : faq.id)
                 }
                 className="w-full flex justify-between items-center 
-                text-left text-lg font-medium text-gray-900"
+                text-left text-lg font-medium text-gray-900 cursor-pointer"
               >
                 {faq.question}
                 <span

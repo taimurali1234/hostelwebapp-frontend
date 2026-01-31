@@ -18,7 +18,7 @@ export default function Dashboard() {
     const fetchDashboard = async () => {
       try {
         const res = await apiClient.get("/dashboard");
-        const dashboardData = res.data?.data ?? res.data;
+        const dashboardData = res.data;
         setData(dashboardData as DashboardData);
       } catch (err) {
         console.error("Dashboard fetch failed", err);
@@ -47,68 +47,93 @@ export default function Dashboard() {
     );
   }
 
+  const summary = data.data.summary;
+  const roomOccupancy = data.data.roomOccupancy;
+  const bookingData = data.data.bookings;
+
   return (
     <AdminLayout>
       <div className="bg-surface">
         <DashbaordHeader />
 
         {/* 🔹 TOP STAT CARDS */}
-        <div className="grid grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-6 gap-4 mb-6">
           <StatCard
-            title="Today's Book Rooms"
-            value={data.topCards?.todayBookedRooms ?? 0}
+            title="Today's Booked Rooms"
+            value={summary.todayBookedRooms}
           />
           <StatCard
-            title="Pending Rooms"
-            value={data.topCards?.pendingRooms ?? 0}
+            title="Pending Bookings"
+            value={bookingData.pending.count}
+          />
+          <StatCard
+            title="Confirmed Bookings"
+            value={bookingData.confirmed.count}
           />
           <StatCard
             title="Available Rooms"
-            value={data.topCards?.availableRooms ?? 0}
+            value={summary.availableRoomsCount}
+          />
+          <StatCard
+            title="Occupied Rooms"
+            value={summary.occupiedRoomsCount}
           />
           <StatCard
             title="Total Revenue"
-            value={data.topCards?.totalRevenue ?? 0}
+            value={`PKR ${(summary.totalRevenue || 0).toLocaleString()}`}
           />
         </div>
 
         {/* 🔹 ROOMS BY TYPE */}
         <div className="text-text-primary font-medium text-xl mb-2">
-          Rooms
+          Rooms by Type
         </div>
 
         <div className="grid grid-cols-4 gap-4 mb-6">
-          {data.roomsByType?.map((room) => (
-            <RoomCard
-              key={room.type}
-              title={room.type.replace("_", " ")}
-              price={0}
-              used={`0/${room._count._all}`}
-            />
-          ))}
+          {roomOccupancy.seatsByRoomType?.map((room) => {
+            // Calculate occupied rooms based on occupied seats and beds per room
+            const bedsPerRoom = room.totalSeats / room.totalRooms || 0;
+            const occupiedRooms = Math.ceil(room.occupiedSeats / bedsPerRoom) || 0;
+            
+            return (
+              <RoomCard
+                key={room.roomType}
+                title={room.roomType.replace("_", " ")}
+                price={0}
+                used={`${occupiedRooms}/${room.totalRooms} rooms`}
+                totalSeats={room.totalSeats}
+                occupiedSeats={room.occupiedSeats}
+                availableSeats={room.availableSeats}
+              />
+            );
+          })}
         </div>
 
         {/* 🔹 BOTTOM GRID */}
         <div className="grid grid-cols-12 gap-6">
           <RoomStatusCard
-            booked={data.roomStatus?.booked ?? 0}
-            available={data.roomStatus?.available ?? 0}
+            booked={summary.occupiedRoomsCount}
+            available={summary.availableRoomsCount}
           />
 
           <FloorStatusCard
             percentage={
               Math.round(
-                (data.roomStatus?.booked ?? 0) /
-                  ((data.roomStatus?.booked ?? 0) +
-                    (data.roomStatus?.available ?? 0)) *
+                (summary.occupiedRoomsCount /
+                  (summary.occupiedRoomsCount + summary.availableRoomsCount)) *
                   100
               ) || 0
             }
           />
 
-          <BookingChart data={data.bookingOverview ?? []} />
+          <BookingChart 
+            data={roomOccupancy.seatsByRoomType.map((room) => ({
+              month: room.roomType.replace("_", " "),
+              count: room.occupiedSeats,
+            }))}
+          />
 
-          <RecentReviews reviews={data.recentReviews ?? []} />
+          <RecentReviews reviews={data.data.reviews.recentReviews} />
         </div>
       </div>
     </AdminLayout>

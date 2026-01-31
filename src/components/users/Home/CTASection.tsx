@@ -1,6 +1,9 @@
 import { FaArrowRight } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const CTASection: React.FC = () => {
+  const navigate = useNavigate();
+
   return (
     <section className=" my-10">
       <div
@@ -21,6 +24,7 @@ const CTASection: React.FC = () => {
         {/* Button */}
         <div className="mt-8">
           <button
+            onClick={() => navigate("/rooms")}
             className="bg-white text-[#2f9a8a] 
             px-6 py-3 rounded-full 
             font-medium flex items-center cursor-pointer gap-2 

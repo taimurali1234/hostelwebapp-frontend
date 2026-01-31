@@ -1,4 +1,4 @@
-export default function StatCard({ title, value }: { title: string; value: number }) {
+export default function StatCard({ title, value }: { title: string; value: number | string }) {
   return (
     <div className="border border-[#D0D3D9] rounded-xl p-5 bg-white">
       <p className="text-sm">{title}</p>

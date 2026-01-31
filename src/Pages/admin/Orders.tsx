@@ -35,7 +35,7 @@ const Orders = () => {
         ...(statusFilter && { status: statusFilter }),
       });
 
-      const response = await apiClient.get(`/bookings/orders?${params}`);
+      const response = await apiClient.get(`/bookings/orders/admin/all?${params}`);
       setOrders(response.data.data.items);
       setTotal(response.data.data.total);
     } catch (error) {

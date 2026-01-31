@@ -1,6 +1,9 @@
 import { Plane, Clock } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const VisitOfficeSection = () => {
+  const navigate = useNavigate();
+
   return (
     <section
       className="relative bg-[#eef6f5] py-20 px-6 text-center"
@@ -17,7 +20,7 @@ const VisitOfficeSection = () => {
             View our rooms and book a tour anytime during our office
             hours!
           </p>
-          <button className="mt-4 bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700">
+          <button onClick={() => navigate("/bookings")} className="mt-4 bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 cursor-pointer">
             Book a Room
           </button>
         </div>
@@ -30,7 +33,7 @@ const VisitOfficeSection = () => {
             Monday – Friday: 9:00 AM – 6:00 PM <br />
             Saturday & Sunday: 10:00 AM – 4:00 PM
           </p>
-          <button className="mt-4 bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700">
+          <button onClick={() => navigate("/bookings")} className="mt-4 bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 cursor-pointer">
             Book a Room
           </button>
         </div>

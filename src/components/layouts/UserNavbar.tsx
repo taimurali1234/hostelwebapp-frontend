@@ -13,15 +13,19 @@ import { useAuth } from "../../context/AuthContext";
 import { Link, useLocation, useNavigate } from "react-router";
 import { logout } from "../../services/authService";
 import { useBooking } from "@/context/BookingContext";
-
-interface Notification {
-  id: string;
-  title: string;
-  read: boolean;
-}
+import { useNotifications } from "@/context/NotificationContext";
+import { disconnectSocket } from "@/services/socket";
 
 export default function UserNavbar() {
   const { user, setUser } = useAuth();
+  const {
+    notifications,
+    unreadCount,
+    markAsRead,
+    markAllAsRead,
+    reloadNotifications
+  } = useNotifications();
+
   const location = useLocation();
   const navigate = useNavigate();
   const { cartItems = [] } = useBooking();
@@ -31,17 +35,11 @@ export default function UserNavbar() {
   const [mobileMenu, setMobileMenu] = useState(false);
   const [showCart, setShowCart] = useState(false);
 
-  const [notifications, setNotifications] = useState<Notification[]>([
-    { id: "1", title: "New booking received", read: false },
-    { id: "2", title: "Room price updated", read: false },
-  ]);
-
   const notifRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
   const cartRef = useRef<HTMLDivElement>(null);
 
-  const unreadCount = notifications.filter((n) => !n.read).length;
-
+  
   /* -------------------- CLICK OUTSIDE LOGIC -------------------- */
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -69,6 +67,7 @@ export default function UserNavbar() {
   const handleLogout = async () => {
     try {
       await logout();
+      disconnectSocket();
       setShowProfile(false);
     } catch (err) {
       console.error("Logout failed", err);
@@ -77,13 +76,29 @@ export default function UserNavbar() {
       navigate("/login");
     }
   };
+ const handleMarkAsRead = async (id: string) => {
+  const notif = notifications.find((n) => n.id === id);
+  if (notif?.isRead) return;
+
+  setShowNotifications(false);
+  await markAsRead(id);
+};
+
+const handleMarkAllAsRead = async () => {
+  try {
+    await markAllAsRead();
+    // ✅ Reload from backend to verify persistence
+    await reloadNotifications();
+  } catch (err) {
+    console.error("Failed to mark all as read:", err);
+  }
+};
+
+
 
   const openNotifications = () => {
     setShowNotifications((p) => !p);
     setShowCart(false);
-    setNotifications((prev) =>
-      prev.map((n) => ({ ...n, read: true }))
-    );
   };
 
   const navLinkClass = (path: string) =>
@@ -95,7 +110,7 @@ export default function UserNavbar() {
 
   return (
     <nav className="fixed top-0 w-full z-50 bg-[#f3f7f4] border-b border-green-100">
-      <div className="max-w-7xl mx-auto px-6 h-[68px] flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-6 h-17 flex items-center justify-between">
 
         {/* Logo */}
         <div className="text-xl font-bold text-green-700 cursor-pointer">
@@ -135,24 +150,65 @@ export default function UserNavbar() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
-                  className="absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-xl border overflow-hidden"
+                  className="absolute right-0 mt-3 w-96 bg-white rounded-2xl shadow-xl border overflow-hidden z-50"
                 >
-                  <div className="px-4 py-3 font-semibold border-b">
-                    Notifications
+                  <div className="px-4 py-3 flex justify-between items-center font-semibold border-b bg-gray-50">
+                    <span>Notifications</span>
+                    {unreadCount > 0 && (
+    <button
+      onClick={handleMarkAllAsRead}
+      className="text-xs text-green-600 hover:underline"
+    >
+      Mark all as read
+    </button>
+  )}
                   </div>
 
-                  {notifications.map((n) => (
-                    <div
-                      key={n.id}
-                      className="px-4 py-3 text-sm border-b last:border-none hover:bg-green-100 cursor-pointer"
-                    >
-                      {n.title}
-                    </div>
-                  ))}
+                  <div className="max-h-[60vh] md:max-h-96 overflow-y-auto">
+                    {notifications.filter(n => !n.isRead).length > 0 ? (
+                      notifications.map((n) => (
+                        <div
+                          key={n.id}
+                          onClick={() => handleMarkAsRead(n.id)}
+                          className={`flex gap-3 px-4 py-3 items-start border-b last:border-none cursor-pointer transition
+                            ${n.isRead ? "bg-white hover:bg-gray-50" : "bg-green-50 hover:bg-green-100"}
+                          `}
+                        >
+                          <div className="shrink-0 mt-1">
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${n.isRead ? "bg-gray-200 text-gray-700" : "bg-green-600 text-white"}`}>
+                              {n.title?.[0] ?? "N"}
+                            </div>
+                          </div>
+
+                          <div className="flex-1 min-w-0">
+                            <div className="flex justify-between items-start gap-2">
+                              <div className="font-semibold text-gray-900 truncate">{n.title}</div>
+                              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap ${
+                                n.isRead 
+                                  ? "bg-gray-300 text-gray-700" 
+                                  : "bg-green-600 text-white"
+                              }`}>
+                                {n.isRead ? "READ" : "UNREAD"}
+                              </span>
+                            </div>
+
+                            <div className="text-sm text-gray-600 mt-1 truncate">{n.message}</div>
+                            <div className="text-xs text-gray-400 mt-1">{new Date(n.createdAt).toLocaleString()}</div>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="px-4 py-8 text-center text-sm text-gray-600">
+                        No new notification till yet
+                      </div>
+                    )}
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>
           </div>
+
+         
 
           {/* Cart */}
           <div className="relative" ref={cartRef}>
@@ -286,7 +342,7 @@ export default function UserNavbar() {
           {/* Mobile Toggle */}
           <button
             onClick={() => setMobileMenu((p) => !p)}
-            className="md:hidden p-2 rounded-lg hover:bg-green-100"
+            className="md:hidden p-2 rounded-lg hover:bg-green-100 cursor-pointer"
           >
             {mobileMenu ? <X /> : <Menu />}
           </button>
