@@ -29,7 +29,7 @@ export default function ForgotPasswordModal({
 
     try {
       const response = await fetch(
-        "http://localhost:3000/api/users/forgotPassword",
+        `${import.meta.env.VITE_BACKEND_URL}/users/forgotPassword`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

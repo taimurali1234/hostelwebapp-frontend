@@ -29,7 +29,7 @@ export default function ResetPassword() {
 
       try {
         const response = await fetch(
-          `http://localhost:3000/api/users/verifyResetToken?token=${token}&email=${encodeURIComponent(email)}`,
+          `${import.meta.env.VITE_BACKEND_URL}/users/verifyResetToken?token=${token}&email=${encodeURIComponent(email)}`,
           { method: "GET", credentials: "include" }
         );
 
@@ -72,7 +72,7 @@ export default function ResetPassword() {
 
     try {
       const response = await fetch(
-        "http://localhost:3000/api/users/resetPassword",
+        `${import.meta.env.VITE_BACKEND_URL}/users/resetPassword`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
