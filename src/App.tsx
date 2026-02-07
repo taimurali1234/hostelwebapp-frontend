@@ -6,6 +6,7 @@
   import { AuthProvider } from "./context/AuthContext";
   import { BookingProvider } from "./context/BookingContext";
   import { NotificationProvider } from "./context/NotificationContext";
+  import AIAssistant from "./components/common/AIAssistant/AIAssistant";
 
   export interface RouteType {
     path: string;
@@ -38,6 +39,7 @@
           pauseOnHover
           draggable
         />
+        <AIAssistant />
         <main>
           <Routes>
             {renderRoutes(typedRoutes.public)}

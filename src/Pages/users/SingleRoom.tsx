@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 
 import RoomGallery from "@/components/users/SingleRoom/RoomGallery";
 import RoomInfo from "@/components/users/SingleRoom/RoomInfo";
-import AvailabilityCalendar from "@/components/users/SingleRoom/AvailabilityCalendar";
 import TestimonialsSection from "@/components/users/Home/TestimonialsSection";
 import AiBookingAssistant from "@/components/users/SingleRoom/AiBookingAssistant";
 import BookingBox from "@/components/users/SingleRoom/BookingBox";
@@ -88,7 +87,7 @@ export default function SingleRoom() {
           <TestimonialsSection />
 
       {/* Floating AI Assistant */}
-      <AiBookingAssistant room={room.room} />
+      {/* <AiBookingAssistant room={room.room} /> */}
     </UserLayout>
   );
 }
