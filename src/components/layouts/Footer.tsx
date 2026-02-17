@@ -108,7 +108,7 @@ export default function Footer() {
 
       {/* Bottom Bar */}
       <div className="border-t border-gray-800">
-        <div className="max-w-7xl mx-auto px-6 py-4 text-center text-sm text-gray-500">
+        <div className="max-w-7xl mx-auto px-6 py-4 text-center text-sm text-gray-300">
           © {new Date().getFullYear()} Student Hostel. All rights reserved.
         </div>
       </div>
@@ -142,3 +142,4 @@ function ContactItem({
     </div>
   );
 }
+

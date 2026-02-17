@@ -22,7 +22,7 @@ const RoomCard: React.FC<RoomCardProps> = ({ room }) => {
         {/* Status Badge */}
         <span
           className={`absolute top-3 right-3 px-3 py-1 text-sm font-medium rounded-full text-white
-            ${isAvailable ? "bg-green-600" : "bg-red-500"}`}
+            ${isAvailable ? "bg-green-800" : "bg-red-700"}`}
         >
           {room.status}
         </span>
@@ -78,7 +78,7 @@ const RoomCard: React.FC<RoomCardProps> = ({ room }) => {
             className={`px-5 py-2 cursor-pointer rounded-full transition font-medium
               ${
                 isAvailable
-                  ? "bg-green-600 text-white hover:bg-green-700"
+                  ? "bg-green-800 text-white hover:bg-green-900"
                   : "bg-gray-300 text-gray-500 cursor-not-allowed"
               }`}
           >

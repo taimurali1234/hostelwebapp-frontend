@@ -7,7 +7,7 @@ const CTASection: React.FC = () => {
   return (
     <section className=" my-10">
       <div
-        className="bg-[#33837a]  
+        className="bg-[#1f5f58]  
         py-14 sm:py-16 lg:py-20 
         text-center text-white"
       >
@@ -17,7 +17,7 @@ const CTASection: React.FC = () => {
         </h2>
 
         {/* Subtitle */}
-        <p className="text-sm sm:text-base text-white/90 mt-3">
+        <p className="text-sm sm:text-base text-white mt-3">
           Join hundreds of happy students who call StayHub their home
         </p>
 
@@ -25,7 +25,7 @@ const CTASection: React.FC = () => {
         <div className="mt-8">
           <button
             onClick={() => navigate("/rooms")}
-            className="bg-white text-[#2f9a8a] 
+            className="bg-white text-[#0f4f47] 
             px-6 py-3 rounded-full 
             font-medium flex items-center cursor-pointer gap-2 
             mx-auto hover:bg-gray-100 transition"
