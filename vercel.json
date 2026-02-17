@@ -4,5 +4,24 @@
       "source": "/(.*)",
       "destination": "/"
     }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=63072000; includeSubDomains; preload"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; img-src 'self' https: data: blob:; media-src 'self' https:; script-src 'self' 'unsafe-inline' https://res.cloudinary.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://api.staydude.org wss://api.staydude.org; frame-ancestors 'none';"
+        }
+      ]
+    }
   ]
 }
