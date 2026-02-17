@@ -178,72 +178,93 @@ const res = await loginService(
 
           {/* Email Input */}
           <div className="space-y-3 group">
-            <label className="text-sm font-semibold text-gray-300">
-              Email Address
-            </label>
-            <div className={`relative transition-all duration-300 ${focusedField === 'email' ? 'transform scale-105' : ''}`}>
-              <div className={`absolute inset-0 rounded-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 ${focusedField === 'email' ? 'bg-gradient-to-r from-blue-500 to-purple-500 opacity-100' : 'bg-transparent'}`}></div>
-              <div className="relative bg-slate-700 rounded-xl p-0.5">
-                <div className="bg-slate-800 rounded-[10px] px-4 py-3 flex items-center gap-3 focus-within:bg-slate-700 transition-colors">
-                  <Mail size={20} className="text-gray-400" />
-                  <input
-                    type="email"
-                    placeholder="you@example.com"
-                    className="w-full bg-transparent text-white placeholder-gray-500 outline-none text-base"
-                    value={form.email}
-                    onFocus={() => setFocusedField('email')}
-                    onBlur={() => setFocusedField(null)}
-                    onChange={(e) =>
-                      setForm((p) => ({ ...p, email: e.target.value }))
-                    }
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
+  <label
+    htmlFor="email"
+    className="text-sm font-semibold text-gray-300"
+  >
+    Email Address
+  </label>
 
+  <div
+    className={`relative transition-all duration-300 ${
+      focusedField === "email" ? "transform scale-105" : ""
+    }`}
+  >
+    <div className="relative bg-slate-700 rounded-xl p-0.5">
+      <div className="bg-slate-800 rounded-[10px] px-4 py-3 flex items-center gap-3 focus-within:bg-slate-700 transition-colors">
+        <Mail size={20} className="text-gray-400" />
+        <input
+          id="email"
+          name="email"
+          type="email"
+          autoComplete="email"
+          placeholder="you@example.com"
+          className="w-full bg-transparent text-white placeholder-gray-500 outline-none text-base"
+          value={form.email}
+          onFocus={() => setFocusedField("email")}
+          onBlur={() => setFocusedField(null)}
+          onChange={(e) =>
+            setForm((p) => ({ ...p, email: e.target.value }))
+          }
+        />
+      </div>
+    </div>
+  </div>
+</div>
           {/* Password Input */}
           <div className="space-y-3">
-            <label className="text-sm font-semibold text-gray-300">
-              Password
-            </label>
-            <div className={`relative transition-all duration-300 ${focusedField === 'password' ? 'transform scale-105' : ''}`}>
-              <div className={`absolute inset-0 rounded-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 ${focusedField === 'password' ? 'bg-gradient-to-r from-blue-500 to-purple-500 opacity-100' : 'bg-transparent'}`}></div>
-              <div className="relative bg-slate-700 rounded-xl p-0.5">
-                <div className="bg-slate-800 rounded-[10px] px-4 py-3 flex items-center gap-3 focus-within:bg-slate-700 transition-colors group">
-                  <Lock size={20} className="text-gray-400" />
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    placeholder="••••••••"
-                    className="w-full bg-transparent text-white placeholder-gray-500 outline-none text-base"
-                    value={form.password}
-                    onFocus={() => setFocusedField('password')}
-                    onBlur={() => setFocusedField(null)}
-                    onChange={(e) =>
-                      setForm((p) => ({ ...p, password: e.target.value }))
-                    }
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="text-gray-400 hover:text-gray-200 transition-colors"
-                  >
-                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                  </button>
-                </div>
-              </div>
-            </div>
-            <a 
-              href="#" 
-              onClick={(e) => {
-                e.preventDefault();
-                setShowForgotPasswordModal(true);
-              }}
-              className="text-sm text-blue-400 hover:text-blue-300 transition-colors font-medium"
-            >
-              Forgot password?
-            </a>
-          </div>
+  <label
+    htmlFor="password"
+    className="text-sm font-semibold text-gray-300"
+  >
+    Password
+  </label>
+
+  <div
+    className={`relative transition-all duration-300 ${
+      focusedField === "password" ? "transform scale-105" : ""
+    }`}
+  >
+    <div className="relative bg-slate-700 rounded-xl p-0.5">
+      <div className="bg-slate-800 rounded-[10px] px-4 py-3 flex items-center gap-3 focus-within:bg-slate-700 transition-colors group">
+        <Lock size={20} className="text-gray-400" />
+        <input
+          id="password"
+          name="password"
+          type={showPassword ? "text" : "password"}
+          autoComplete="current-password"
+          placeholder="••••••••"
+          className="w-full bg-transparent text-white placeholder-gray-500 outline-none text-base"
+          value={form.password}
+          onFocus={() => setFocusedField("password")}
+          onBlur={() => setFocusedField(null)}
+          onChange={(e) =>
+            setForm((p) => ({ ...p, password: e.target.value }))
+          }
+        />
+        <button
+          type="button"
+          onClick={() => setShowPassword(!showPassword)}
+          aria-label={showPassword ? "Hide password" : "Show password"}
+          className="text-gray-400 hover:text-gray-200 transition-colors"
+        >
+          {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <a
+    href="#"
+    onClick={(e) => {
+      e.preventDefault();
+      setShowForgotPasswordModal(true);
+    }}
+    className="text-sm text-blue-400 hover:text-blue-300 transition-colors font-medium"
+  >
+    Forgot password?
+  </a>
+</div>
 
           {/* Error Message */}
           {error && (
@@ -326,13 +347,23 @@ const res = await loginService(
               Enter your email address and we'll send you a new verification link.
             </p>
 
-            <input
-              type="email"
-              placeholder="your@email.com"
-              value={resendEmail}
-              onChange={(e) => setResendEmail(e.target.value)}
-              className="w-full bg-slate-700 text-white px-4 py-2 rounded-lg mb-4 placeholder-gray-500 outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            <label
+  htmlFor="resendEmail"
+  className="sr-only"
+>
+  Email Address
+</label>
+
+<input
+  id="resendEmail"
+  name="email"
+  type="email"
+  autoComplete="email"
+  placeholder="your@email.com"
+  value={resendEmail}
+  onChange={(e) => setResendEmail(e.target.value)}
+  className="w-full bg-slate-700 text-white px-4 py-2 rounded-lg mb-4 placeholder-gray-500 outline-none focus:ring-2 focus:ring-blue-500"
+/>
 
             {error && (
               <div className="px-3 py-2 rounded-lg bg-red-500/10 border border-red-500/50 text-red-300 text-sm mb-4">

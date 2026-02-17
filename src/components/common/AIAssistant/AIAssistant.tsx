@@ -287,7 +287,7 @@ console.log("Welcome response:", welcomeResponse);
         {/* Header */}
         <div className="ai-assistant-header">
           <div className="ai-assistant-title">
-            <h3>Support Assistant</h3>
+            <p>Support Assistant</p>
             <p className="ai-assistant-status">
               {speechSynthesis.isSpeaking
                 ? "Speaking..."

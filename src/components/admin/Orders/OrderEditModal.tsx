@@ -39,6 +39,7 @@ export default function OrderEditModal({
           <button
             onClick={onClose}
             disabled={isLoading}
+            aria-label="Close edit order dialog"
             className="text-gray-500 hover:text-gray-700 disabled:opacity-50"
           >
             <X size={24} />

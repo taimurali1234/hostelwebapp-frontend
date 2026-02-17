@@ -1,4 +1,5 @@
 import { MapPin, Phone, Mail } from "lucide-react";
+import React from "react";
 
 const ContactInfo = () => {
   return (
@@ -25,4 +26,4 @@ const ContactInfo = () => {
   );
 };
 
-export default ContactInfo;
+export default React.memo(ContactInfo);

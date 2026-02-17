@@ -152,26 +152,32 @@ export default function Signup() {
           <div className="grid grid-cols-1 gap-1 lg:gap-2">
             {/* Name Input */}
             <div className="space-y-0.5 group">
-              <label className="text-xs font-semibold text-gray-300">
-                Full Name
-              </label>
+             <label htmlFor="name" className="text-xs font-semibold text-gray-300">
+  Full Name
+</label>
               <div className={`relative transition-all duration-300 ${focusedField === 'name' ? 'transform scale-105' : ''}`}>
                 <div className={`absolute inset-0 rounded-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 ${focusedField === 'name' || fieldErrors.name ? 'bg-gradient-to-r from-purple-500 to-pink-500 opacity-100' : 'bg-transparent'}`}></div>
                 <div className="relative bg-slate-700 rounded-xl p-0.5">
                   <div className={`bg-slate-800 rounded-[10px] px-3 py-1.5 flex items-center gap-2 focus-within:bg-slate-700 transition-colors ${fieldErrors.name ? 'border border-red-500' : ''}`}>
                     <User size={13} className="text-gray-400 flex-shrink-0" />
-                    <input
-                      type="text"
-                      placeholder="John Doe"
-                      className="w-full bg-transparent text-white placeholder-gray-500 outline-none text-sm lg:text-base"
-                      value={form.name}
-                      onFocus={() => setFocusedField('name')}
-                      onBlur={() => setFocusedField(null)}
-                      onChange={(e) => {
-                        handleChange("name", e.target.value);
-                        setFieldErrors(prev => ({ ...prev, name: "" }));
-                      }}
-                    />
+                    
+
+<input
+  id="name"
+  name="name"
+  type="text"
+  autoComplete="name"
+  placeholder="John Doe"
+  className="w-full bg-transparent text-white placeholder-gray-500 outline-none text-sm lg:text-base"
+  value={form.name}
+  onFocus={() => setFocusedField("name")}
+  onBlur={() => setFocusedField(null)}
+  onChange={(e) => {
+    handleChange("name", e.target.value);
+    setFieldErrors((prev) => ({ ...prev, name: "" }));
+  }}
+/>
+
                   </div>
                 </div>
               </div>
@@ -182,26 +188,29 @@ export default function Signup() {
 
             {/* Email Input */}
             <div className="space-y-0.5 group">
-              <label className="text-xs font-semibold text-gray-300">
-                Email Address
-              </label>
+             <label htmlFor="email" className="text-xs font-semibold text-gray-300">
+  Email Address
+</label>
               <div className={`relative transition-all duration-300 ${focusedField === 'email' ? 'transform scale-105' : ''}`}>
                 <div className={`absolute inset-0 rounded-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 ${focusedField === 'email' || fieldErrors.email ? 'bg-gradient-to-r from-purple-500 to-pink-500 opacity-100' : 'bg-transparent'}`}></div>
                 <div className="relative bg-slate-700 rounded-xl p-0.5">
                   <div className={`bg-slate-800 rounded-[10px] px-3 py-1.5 flex items-center gap-2 focus-within:bg-slate-700 transition-colors ${fieldErrors.email ? 'border border-red-500' : ''}`}>
                     <Mail size={13} className="text-gray-400 flex-shrink-0" />
                     <input
-                      type="email"
-                      placeholder="you@example.com"
-                      className="w-full bg-transparent text-white placeholder-gray-500 outline-none text-sm lg:text-base"
-                      value={form.email}
-                      onFocus={() => setFocusedField('email')}
-                      onBlur={() => setFocusedField(null)}
-                      onChange={(e) => {
-                        handleChange("email", e.target.value);
-                        setFieldErrors(prev => ({ ...prev, email: "" }));
-                      }}
-                    />
+  id="email"
+  name="email"
+  type="email"
+  autoComplete="email"
+  placeholder="you@example.com"
+  className="w-full bg-transparent text-white placeholder-gray-500 outline-none text-sm lg:text-base"
+  value={form.email}
+  onFocus={() => setFocusedField("email")}
+  onBlur={() => setFocusedField(null)}
+  onChange={(e) => {
+    handleChange("email", e.target.value);
+    setFieldErrors((prev) => ({ ...prev, email: "" }));
+  }}
+/>
                   </div>
                 </div>
               </div>
@@ -212,26 +221,30 @@ export default function Signup() {
 
             {/* Phone Input */}
             <div className="space-y-0.5 group">
-              <label className="text-xs font-semibold text-gray-300">
-                Phone Number
-              </label>
+              <label htmlFor="phone" className="text-xs font-semibold text-gray-300">
+  Phone Number
+</label>
+
               <div className={`relative transition-all duration-300 ${focusedField === 'phone' ? 'transform scale-105' : ''}`}>
                 <div className={`absolute inset-0 rounded-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 ${focusedField === 'phone' || fieldErrors.phone ? 'bg-gradient-to-r from-purple-500 to-pink-500 opacity-100' : 'bg-transparent'}`}></div>
                 <div className="relative bg-slate-700 rounded-xl p-0.5">
                   <div className={`bg-slate-800 rounded-[10px] px-3 py-1.5 flex items-center gap-2 focus-within:bg-slate-700 transition-colors ${fieldErrors.phone ? 'border border-red-500' : ''}`}>
                     <Phone size={13} className="text-gray-400 flex-shrink-0" />
                     <input
-                      type="tel"
-                      placeholder="03001234567 or +923001234567"
-                      className="w-full bg-transparent text-white placeholder-gray-500 outline-none text-sm lg:text-base"
-                      value={form.phone}
-                      onFocus={() => setFocusedField('phone')}
-                      onBlur={() => setFocusedField(null)}
-                      onChange={(e) => {
-                        handleChange("phone", e.target.value);
-                        setFieldErrors(prev => ({ ...prev, phone: "" }));
-                      }}
-                    />
+  id="phone"
+  name="phone"
+  type="tel"
+  autoComplete="tel"
+  placeholder="03001234567 or +923001234567"
+  className="w-full bg-transparent text-white placeholder-gray-500 outline-none text-sm lg:text-base"
+  value={form.phone}
+  onFocus={() => setFocusedField("phone")}
+  onBlur={() => setFocusedField(null)}
+  onChange={(e) => {
+    handleChange("phone", e.target.value);
+    setFieldErrors((prev) => ({ ...prev, phone: "" }));
+  }}
+/>
                   </div>
                 </div>
               </div>
@@ -242,29 +255,33 @@ export default function Signup() {
 
             {/* Password Input */}
             <div className="space-y-0.5 group">
-              <label className="text-xs font-semibold text-gray-300">
-                Password
-              </label>
+              <label htmlFor="password" className="text-xs font-semibold text-gray-300">
+  Password
+</label>
               <div className={`relative transition-all duration-300 ${focusedField === 'password' ? 'transform scale-105' : ''}`}>
                 <div className={`absolute inset-0 rounded-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 ${focusedField === 'password' || fieldErrors.password ? 'bg-gradient-to-r from-purple-500 to-pink-500 opacity-100' : 'bg-transparent'}`}></div>
                 <div className="relative bg-slate-700 rounded-xl p-0.5">
                   <div className={`bg-slate-800 rounded-[10px] px-3 py-1.5 flex items-center gap-2 focus-within:bg-slate-700 transition-colors group ${fieldErrors.password ? 'border border-red-500' : ''}`}>
                     <Lock size={13} className="text-gray-400 flex-shrink-0" />
                     <input
-                      type={showPassword ? "text" : "password"}
-                      placeholder="••••••••"
-                      className="w-full bg-transparent text-white placeholder-gray-500 outline-none text-sm lg:text-base"
-                      value={form.password}
-                      onFocus={() => setFocusedField('password')}
-                      onBlur={() => setFocusedField(null)}
-                      onChange={(e) => {
-                        handleChange("password", e.target.value);
-                        setFieldErrors(prev => ({ ...prev, password: "" }));
-                      }}
-                    />
+  id="password"
+  name="password"
+  type={showPassword ? "text" : "password"}
+  autoComplete="new-password"
+  placeholder="••••••••"
+  className="w-full bg-transparent text-white placeholder-gray-500 outline-none text-sm lg:text-base"
+  value={form.password}
+  onFocus={() => setFocusedField("password")}
+  onBlur={() => setFocusedField(null)}
+  onChange={(e) => {
+    handleChange("password", e.target.value);
+    setFieldErrors((prev) => ({ ...prev, password: "" }));
+  }}
+/>
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
+                      aria-label={showPassword ? "Hide password" : "Show password"}
                       className="text-gray-400 hover:text-gray-200 transition-colors"
                     >
                       {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
@@ -279,30 +296,34 @@ export default function Signup() {
 
             {/* Address Input */}
             <div className="space-y-0.5 group">
-              <label className="text-xs font-semibold text-gray-300">
-                Address
-              </label>
+              <label htmlFor="address" className="text-xs font-semibold text-gray-300">
+  Address
+</label>
               <div className={`relative transition-all duration-300 ${focusedField === 'address' ? 'transform scale-105' : ''}`}>
                 <div className={`absolute inset-0 rounded-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 ${focusedField === 'address' || fieldErrors.address ? 'bg-gradient-to-r from-purple-500 to-pink-500 opacity-100' : 'bg-transparent'}`}></div>
                 <div className="relative bg-slate-700 rounded-xl p-0.5">
                   <div className={`bg-slate-800 rounded-[10px] px-3 py-1.5 flex items-center gap-2 focus-within:bg-slate-700 transition-colors ${fieldErrors.address ? 'border border-red-500' : ''}`}>
                     <MapPin size={13} className="text-gray-400 flex-shrink-0" />
                     <input
-                      type="text"
-                      placeholder="Enter your address"
-                      className="w-full bg-transparent text-white placeholder-gray-500 outline-none text-sm lg:text-base"
-                      value={form.address}
-                      onFocus={() => setFocusedField('address')}
-                      onBlur={() => setFocusedField(null)}
-                      onChange={(e) => {
-                        handleChange("address", e.target.value);
-                        setFieldErrors(prev => ({ ...prev, address: "" }));
-                      }}
-                    />
+  id="address"
+  name="address"
+  type="text"
+  autoComplete="street-address"
+  placeholder="Enter your address"
+  className="w-full bg-transparent text-white placeholder-gray-500 outline-none text-sm lg:text-base"
+  value={form.address}
+  onFocus={() => setFocusedField("address")}
+  onBlur={() => setFocusedField(null)}
+  onChange={(e) => {
+    handleChange("address", e.target.value);
+    setFieldErrors((prev) => ({ ...prev, address: "" }));
+  }}
+/>
                     <button
                       type="button"
                       onClick={handleLocateMe}
                       disabled={loadingLocation}
+                      aria-label="Use current location"
                       className="text-purple-300 hover:text-purple-200 transition-colors disabled:opacity-50 flex-shrink-0 p-1"
                       title="Locate me"
                     >

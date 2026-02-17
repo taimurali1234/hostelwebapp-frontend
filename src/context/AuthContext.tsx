@@ -1,7 +1,7 @@
-import { disconnectSocket, initializeSocket } from "@/services/socket";
-import  {
+import {
   createContext,
   useContext,
+  useEffect,
   useState,
   type ReactNode,
 } from "react";
@@ -49,14 +49,29 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       localStorage.setItem("user", JSON.stringify(user));
     } else {
       localStorage.removeItem("user");
-
     }
     setUserState(user);
   };
 
- 
+  useEffect(() => {
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key !== "user") return;
 
+      if (!event.newValue) {
+        setUserState(null);
+        return;
+      }
 
+      try {
+        setUserState(JSON.parse(event.newValue));
+      } catch {
+        setUserState(null);
+      }
+    };
+
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
 
   return (
     <AuthContext.Provider

@@ -1,12 +1,13 @@
   import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
   import routes from "./routes/AppRoutes";
-  import {   type ReactElement } from "react";
+  import {   lazy, Suspense, type ReactElement } from "react";
   import { ToastContainer } from "react-toastify";
   import "react-toastify/dist/ReactToastify.css";
   import { AuthProvider } from "./context/AuthContext";
   import { BookingProvider } from "./context/BookingContext";
   import { NotificationProvider } from "./context/NotificationContext";
-  import AIAssistant from "./components/common/AIAssistant/AIAssistant";
+  const AIAssistant = lazy(() => import("./components/common/AIAssistant/AIAssistant"));
+import PageLoader from "./components/common/PageLoader";
 
   export interface RouteType {
     path: string;
@@ -39,12 +40,16 @@
           pauseOnHover
           draggable
         />
+        <Suspense fallback={<PageLoader />}>  
         <AIAssistant />
+        </Suspense>
         <main>
+            <Suspense fallback={<PageLoader />}>
           <Routes>
             {renderRoutes(typedRoutes.public)}
             {renderRoutes(typedRoutes.admin)}
           </Routes>
+          </Suspense>
         </main>
       </div>
     );

@@ -1,6 +1,7 @@
-import { motion, AnimatePresence } from "framer-motion";
+import React from "react";
+import { motion } from "framer-motion";
 
-const ContactHero = () => {
+const ContactHero = React.memo(() => {
   return (
     <section
       className="relative h-[65vh] flex items-center justify-center text-center"
@@ -26,6 +27,6 @@ const ContactHero = () => {
       </motion.div>
     </section>
   );
-};
+});
 
 export default ContactHero;

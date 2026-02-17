@@ -99,6 +99,7 @@ export default function AddNotificationModal({
           <button
             onClick={onClose}
             disabled={loading}
+            aria-label="Close notification dialog"
             className="text-gray-500 hover:text-gray-700"
           >
             <X size={20} />

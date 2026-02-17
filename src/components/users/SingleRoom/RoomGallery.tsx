@@ -40,6 +40,7 @@ const RoomGallery: React.FC<Props> = ({ images = [], videos = [] }) => {
         {currentMedia.type === 'image' ? (
           <img
             src={currentMedia.url}
+            alt={`Room image ${activeIndex + 1}`}
             onClick={() => setFullscreen(currentMedia.url)}
             className="w-full h-64 md:h-80 lg:h-96 object-cover cursor-pointer"
           />
@@ -66,12 +67,14 @@ const RoomGallery: React.FC<Props> = ({ images = [], videos = [] }) => {
           <>
             <button
               onClick={handlePrev}
+              aria-label="Previous media"
               className="absolute left-2 top-1/2 cursor-pointer -translate-y-1/2 bg-black/50 hover:bg-black/75 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
             >
               <ChevronLeft size={18} />
             </button>
             <button
               onClick={handleNext}
+              aria-label="Next media"
               className="absolute right-2 cursor-pointer top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/75 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
             >
               <ChevronRight size={18} />
@@ -91,6 +94,7 @@ const RoomGallery: React.FC<Props> = ({ images = [], videos = [] }) => {
           <button
             key={media.id}
             onClick={() => setActiveIndex(idx)}
+            aria-label={`View media ${idx + 1}`}
             className={`relative h-16 md:h-20 rounded-lg overflow-hidden transition-all hover:scale-105 ${
               activeIndex === idx
                 ? "ring-2 ring-green-600 ring-offset-1"
@@ -98,7 +102,7 @@ const RoomGallery: React.FC<Props> = ({ images = [], videos = [] }) => {
             }`}
           >
             {media.type === 'image' ? (
-              <img src={media.url} alt="thumbnail" className="w-full cursor-pointer h-full object-cover" />
+              <img src={media.url} alt={`Room media thumbnail ${idx + 1}`} className="w-full cursor-pointer h-full object-cover" />
             ) : (
               <>
                 <video src={media.url} muted className="w-full cursor-pointer h-full object-cover" />
@@ -116,6 +120,7 @@ const RoomGallery: React.FC<Props> = ({ images = [], videos = [] }) => {
         <div className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center">
           <button
             onClick={() => setFullscreen(null)}
+            aria-label="Close fullscreen media"
             className="absolute top-4 right-4 text-white hover:bg-white/20 p-2 rounded-full transition z-10"
           >
             <X size={24} />
@@ -124,7 +129,7 @@ const RoomGallery: React.FC<Props> = ({ images = [], videos = [] }) => {
           {fullscreen.endsWith(".mp4") ? (
             <video src={fullscreen} controls autoPlay className="max-h-[90%] max-w-[90%]" />
           ) : (
-            <img src={fullscreen} className="max-h-[90%] max-w-[90%] object-contain" />
+            <img src={fullscreen} alt="Fullscreen room media" className="max-h-[90%] max-w-[90%] object-contain" />
           )}
         </div>
       )}

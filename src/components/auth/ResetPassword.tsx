@@ -200,6 +200,7 @@ export default function ResetPassword() {
                     type="button"
                     onClick={() => setShowNewPassword(!showNewPassword)}
                     disabled={loading}
+                    aria-label={showNewPassword ? "Hide new password" : "Show new password"}
                     className="text-gray-400 hover:text-gray-200 transition-colors"
                   >
                     {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -230,6 +231,7 @@ export default function ResetPassword() {
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     disabled={loading}
+                    aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
                     className="text-gray-400 hover:text-gray-200 transition-colors"
                   >
                     {showConfirmPassword ? (

@@ -135,11 +135,12 @@ const RoomMediaModal: React.FC<Props> = ({ roomId, type, onClose }) => {
 
         {/* Existing Media */}
         <div className="grid grid-cols-3 gap-2">
-          {existingMedia.map((item) =>
+          {existingMedia.map((item, idx) =>
             isImage ? (
               <div key={item.id} className="relative group">
                 <img
                   src={item.url}
+                  alt={`Room image ${idx + 1}`}
                   className="h-20 w-full object-cover rounded"
                 />
 
@@ -151,6 +152,7 @@ const RoomMediaModal: React.FC<Props> = ({ roomId, type, onClose }) => {
 
                 <button
                   onClick={() => handleDelete(item.id)}
+                  aria-label={`Delete room image ${idx + 1}`}
                   className="absolute top-1 right-1 bg-red-500 text-white 
                   rounded-full w-5 h-5 text-xs opacity-0 group-hover:opacity-100 
                   cursor-pointer"
@@ -170,6 +172,7 @@ const RoomMediaModal: React.FC<Props> = ({ roomId, type, onClose }) => {
 
                 <button
                   onClick={() => handleDelete(item.id)}
+                  aria-label="Delete room video"
                   className="absolute top-2 right-2 bg-red-500 text-white 
                   rounded-full w-6 h-6 cursor-pointer"
                 >
@@ -214,6 +217,7 @@ const RoomMediaModal: React.FC<Props> = ({ roomId, type, onClose }) => {
                 <img
                   key={i}
                   src={src}
+                  alt={`Image preview ${i + 1}`}
                   className="h-20 object-cover rounded"
                 />
               ))

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Users, Check } from "lucide-react";
 import type { Room } from "../Rooms/RoomCard";
 import { useBooking } from "@/context/BookingContext";
@@ -10,12 +10,14 @@ interface Props {
 }
 
 const BookingBox: React.FC<Props> = ({ room }) => {
-  const [stayType, setStayType] =
-    useState<"SHORT_TERM" | "LONG_TERM">("SHORT_TERM");
+  const [stayType, setStayType] = useState<"SHORT_TERM" | "LONG_TERM">(
+    "SHORT_TERM",
+  );
   const [selectedSeat, setSelectedSeat] = useState<number | null>(null);
 
   const { addToCart } = useBooking();
   const navigate = useNavigate();
+  const roomId = room?.id || (room as any)?._id;
 
   const totalSeats = room.beds || 1;
   const maxAvailableSeats = room.availableSeats;
@@ -25,25 +27,80 @@ const BookingBox: React.FC<Props> = ({ room }) => {
       ? room.shortTermPrice || 0
       : room.longTermPrice || 0;
 
+      const STAY_OPTIONS = [
+  { value: "SHORT_TERM", label: "Short Term", icon: "🌙" },
+  { value: "LONG_TERM", label: "Long Term", icon: "📅" },
+] as const;
+
   const seatsSelected = selectedSeat !== null ? selectedSeat + 1 : 0;
 
   /* ---------------- Seat Click Logic (UPDATED) ---------------- */
   const handleSeatClick = (seatNumber: number) => {
-  if (seatNumber + 1 > maxAvailableSeats) {
-    toast.error(
-      `Only ${maxAvailableSeats} seat${
-        maxAvailableSeats > 1 ? "s are" : " is"
-      } available for this room`
-    );
-    return;
-  }
+    if (seatNumber + 1 > maxAvailableSeats) {
+      toast.error(
+        `Only ${maxAvailableSeats} seat${
+          maxAvailableSeats > 1 ? "s are" : " is"
+        } available for this room`,
+      );
+      return;
+    }
 
-  // 🔁 TOGGLE LOGIC
-  setSelectedSeat((prev) =>
-    prev === seatNumber ? null : seatNumber
+    // 🔁 TOGGLE LOGIC
+    setSelectedSeat((prev) => (prev === seatNumber ? null : seatNumber));
+  };
+
+  const handleAddToCart = useCallback(async () => {
+    if (!roomId) {
+      toast.error("Invalid room id. Please refresh and try again.");
+      return;
+    }
+
+    if (seatsSelected <= 0) {
+      toast.error("Please select at least one seat.");
+      return;
+    }
+
+    if (seatsSelected > maxAvailableSeats) {
+      toast.error(
+        `Only ${maxAvailableSeats} seat${
+          maxAvailableSeats > 1 ? "s are" : " is"
+        } available`,
+      );
+      return;
+    }
+
+    try {
+      await addToCart({
+        roomId,
+        stayType,
+        selectedSeats: seatsSelected,
+        quantity: seatsSelected,
+      });
+      toast.success("Room added to cart!");
+      navigate("/bookings");
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Failed to add room to cart";
+
+      toast.error(message);
+
+      if (
+        typeof message === "string" &&
+        message.toLowerCase().includes("log in")
+      ) {
+        navigate("/login");
+      }
+    }
+  }, [roomId, stayType, seatsSelected, maxAvailableSeats, addToCart, navigate]);
+
+  const handleStayTypeChange = useCallback(
+    (type: "SHORT_TERM" | "LONG_TERM") => {
+      setStayType(type);
+    },
+    [],
   );
-};
-
 
   return (
     <div className="bg-white rounded-2xl p-4 md:p-8 shadow-xl border border-gray-100 sticky top-16 space-y-4 md:space-y-6">
@@ -67,9 +124,7 @@ const BookingBox: React.FC<Props> = ({ room }) => {
         </div>
 
         <div
-          className={`flex ${
-            totalSeats <= 3 ? "gap-2" : "gap-1.5"
-          } flex-wrap`}
+          className={`flex ${totalSeats <= 3 ? "gap-2" : "gap-1.5"} flex-wrap`}
         >
           {Array.from({ length: totalSeats }).map((_, i) => {
             const isUnavailable = i + 1 > maxAvailableSeats;
@@ -85,15 +140,15 @@ const BookingBox: React.FC<Props> = ({ room }) => {
                   isUnavailable
                     ? "border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed"
                     : selectedSeat === i
-                    ? "border-green-600 bg-linear-to-br from-green-500 to-green-600 text-white shadow-lg shadow-green-200"
-                    : "border-gray-300 bg-white text-gray-700 hover:border-green-500 hover:bg-green-50 hover:shadow-md"
+                      ? "border-green-600 bg-linear-to-br from-green-500 to-green-600 text-white shadow-lg shadow-green-200"
+                      : "border-gray-300 bg-white text-gray-700 hover:border-green-500 hover:bg-green-50 hover:shadow-md"
                 }
                 ${
                   totalSeats <= 3
                     ? "w-14 md:w-16 h-14 md:h-16 text-base md:text-lg"
                     : totalSeats <= 4
-                    ? "w-12 md:w-14 h-12 md:h-14 text-sm md:text-base"
-                    : "w-11 md:w-12 h-11 md:h-12 text-xs md:text-sm"
+                      ? "w-12 md:w-14 h-12 md:h-14 text-sm md:text-base"
+                      : "w-11 md:w-12 h-11 md:h-12 text-xs md:text-sm"
                 }
               `}
               >
@@ -133,13 +188,10 @@ const BookingBox: React.FC<Props> = ({ room }) => {
 
       {/* Stay Type */}
       <div className="grid grid-cols-2 gap-2 md:gap-3">
-        {[
-          { value: "SHORT_TERM", label: "Short Term", icon: "🌙" },
-          { value: "LONG_TERM", label: "Long Term", icon: "📅" },
-        ].map((option) => (
+        {STAY_OPTIONS.map((option) => (
           <button
             key={option.value}
-            onClick={() => setStayType(option.value as any)}
+            onClick={() => handleStayTypeChange(option.value as any)}
             className={`p-2 md:p-3 rounded-lg border-2 transition-all font-medium text-xs md:text-sm
               ${
                 stayType === option.value
@@ -156,38 +208,7 @@ const BookingBox: React.FC<Props> = ({ room }) => {
       {/* Add to Cart */}
       <button
         disabled={selectedSeat === null}
-        onClick={() => {
-          if (seatsSelected > maxAvailableSeats) {
-            toast.error(
-              `Only ${maxAvailableSeats} seat${
-                maxAvailableSeats > 1 ? "s are" : " is"
-              } available`
-            );
-            return;
-          }
-
-          addToCart({
-            id: crypto.randomUUID(),
-            roomId: room.id,
-            room: {
-              title: room.title,
-              beds: room.beds,
-              availableSeats: room.availableSeats,
-              bookedSeats: room.beds - room.availableSeats,
-              description: room.description,
-            },
-            image: room.images?.[0],
-            stayType,
-            selectedSeats: seatsSelected,
-            quantity: 1,
-            priceWithTax: basePrice,
-            total: basePrice * seatsSelected,
-            addedAt: new Date().toISOString(),
-          });
-
-          toast.success("Room added to cart!");
-          navigate("/bookings");
-        }}
+        onClick={handleAddToCart}
         className="w-full bg-green-600 text-white font-bold py-3 rounded-lg disabled:opacity-50"
       >
         Add to Booking Cart
@@ -196,4 +217,4 @@ const BookingBox: React.FC<Props> = ({ room }) => {
   );
 };
 
-export default BookingBox;
+export default React.memo(BookingBox);

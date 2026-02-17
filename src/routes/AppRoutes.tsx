@@ -1,32 +1,34 @@
-import Home from "../Pages/users/Home";
-import Dashboard from "../Pages/admin/Dashboard";
-import Rooms from "../Pages/admin/Rooms";
-import RoomPricing from "../Pages/admin/RoomPricing";
-import Bookings from "../Pages/admin/Bookings";
-import Orders from "../Pages/admin/Orders";
-import Reviews from "../Pages/admin/Reviews";
-import Users from "../Pages/admin/Users";
-import Notifications from "../Pages/admin/Notifications";
-import Payments from "../Pages/admin/Payments";
-import Analytics from "../Pages/admin/Analytics";
+import { lazy, Suspense } from "react";
+const Home = lazy(() => import("../Pages/users/Home"));
+const Dashboard =  lazy(() => import("../Pages/admin/Dashboard"));
+const Rooms = lazy(() => import("../Pages/admin/Rooms"));
+const RoomPricing = lazy(() => import("../Pages/admin/RoomPricing"));
+const Bookings = lazy(() => import("../Pages/admin/Bookings"));
+const Orders = lazy(() => import("../Pages/admin/Orders"));
+const Reviews = lazy(() => import("../Pages/admin/Reviews"));
+const Users = lazy(() => import("../Pages/admin/Users"));
+const Notifications = lazy(() => import("../Pages/admin/Notifications"));
+
+const Payments = lazy(() => import("../Pages/admin/Payments"));
+const Analytics = lazy(() => import("../Pages/admin/Analytics"));
 
 import Login from "../Pages/users/Login";
 import Signup from "../Pages/users/Signup";
 import ResetPassword from "../components/auth/ResetPassword";
-import OrderDetailsPage from "../Pages/users/OrderDetails";
-import OrderHistoryPage from "../Pages/users/OrderHistory";
+const OrderDetailsPage = lazy(() => import("../Pages/users/OrderDetails"));
+const OrderHistoryPage = lazy(() => import("../Pages/users/OrderHistory"));
 
 import ProtectedRoute from "./ProtectedRoutes";
 import PublicRoute from "./PublicRoutes";
-import UserRooms from "../Pages/users/UserRooms";
-import About from "@/Pages/users/About";
-import Contact from "@/Pages/users/Contact";
-import Policy from "@/Pages/users/Policy";
-import Terms from "@/Pages/users/Terms";
-import SingleRoom from "@/Pages/users/SingleRoom";
-import BookingPage from "@/Pages/users/BookingPage";
-import BookingDetails from "@/Pages/users/BookingDetails";
-import BookingConfirmation from "@/Pages/users/BookingConfirmation";
+const UserRooms = lazy(() => import("../Pages/users/UserRooms"));
+const About = lazy(() => import("../Pages/users/About"));
+const Contact = lazy(() => import("../Pages/users/Contact"));
+const Policy = lazy(() => import("../Pages/users/Policy"));
+const Terms = lazy(() => import("../Pages/users/Terms"));
+const SingleRoom = lazy(() => import("../Pages/users/SingleRoom"));
+const BookingPage = lazy(() => import("../Pages/users/BookingPage"));
+const BookingDetails = lazy(() => import("../Pages/users/BookingDetails"));
+const BookingConfirmation = lazy(() => import("../Pages/users/BookingConfirmation"));
 
 const routes = {
   public: [

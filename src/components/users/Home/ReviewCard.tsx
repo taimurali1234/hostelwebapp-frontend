@@ -16,10 +16,11 @@ const ReviewCard: React.FC<{ review: Review }> = ({ review }) => {
       <div className="flex items-center gap-3">
         <img
           src={review.avatar}
+          alt={`${review.name} avatar`}
           className="w-10 h-10 rounded-full object-cover"
         />
         <div>
-          <h4 className="text-sm font-semibold">{review.name}</h4>
+          <p className="text-sm font-semibold">{review.name}</p>
           <p className="text-xs text-gray-500">{review.role}</p>
         </div>
       </div>

@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react'
 import UserLayout from '../../components/layouts/UserLayout'
 import CTASection from '../../components/users/Home/CTASection'
 import FAQSection from '../../components/users/Home/FAQSection'
@@ -6,8 +7,8 @@ import GallerySection from '../../components/users/Home/GallerySection'
 import HeroSection from '../../components/users/Home/Hero'
 import HowItWorks from '../../components/users/Home/HowItWorks'
 import TestimonialsSection from '../../components/users/Home/TestimonialsSection'
-import VideoGallery from '../../components/users/Home/VideoGallery'
-
+import PageLoader from '@/components/common/PageLoader'
+const VideoGallery = lazy(() => import("../../components/users/Home/VideoGallery"));
 const Home = () => {
   return (
     <div>
@@ -16,7 +17,9 @@ const Home = () => {
         <FeaturedRooms />
         <HowItWorks />
         <GallerySection/>
+        <Suspense fallback={<PageLoader />}>
         <VideoGallery/>
+        </Suspense>
         <TestimonialsSection/>
         <FAQSection/>
         <CTASection/>

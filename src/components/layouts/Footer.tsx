@@ -18,9 +18,9 @@ export default function Footer() {
 
         {/* About */}
         <div className="space-y-5">
-          <h3 className="text-white text-xl font-semibold tracking-wide">
+          <h2 className="text-white text-xl font-semibold tracking-wide">
             About Us
-          </h3>
+          </h2>
           <p className="text-sm leading-relaxed text-gray-400">
             We provide comfortable, affordable hostel accommodations
             for students and visitors. Your home away from home,
@@ -38,9 +38,9 @@ export default function Footer() {
 
         {/* Quick Links */}
         <div>
-          <h3 className="text-white text-xl font-semibold mb-5">
+          <h2 className="text-white text-xl font-semibold mb-5">
             Quick Links
-          </h3>
+          </h2>
           <ul className="space-y-3 text-sm">
             {["Home", "Rooms", "Facilities", "About", "Contact"].map(
               (item) => (
@@ -57,9 +57,9 @@ export default function Footer() {
 
         {/* Legal */}
         <div>
-          <h3 className="text-white text-xl font-semibold mb-5">
+          <h2 className="text-white text-xl font-semibold mb-5">
             Legal
-          </h3>
+          </h2>
           <ul className="space-y-3 text-sm">
             {[
               "Telecommunications",
@@ -80,9 +80,9 @@ export default function Footer() {
 
         {/* Contact */}
         <div className="space-y-5">
-          <h3 className="text-white text-xl font-semibold">
+          <h2 className="text-white text-xl font-semibold">
             Contact Us
-          </h3>
+          </h2>
 
           <div className="space-y-3 text-sm">
             <ContactItem

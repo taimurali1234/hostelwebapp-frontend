@@ -170,9 +170,9 @@ export default function OrderHistoryPage() {
                         {/* Order Info */}
                         <div className="flex-1">
                           <div className="flex items-center gap-4 mb-3">
-                            <h3 className="text-xl font-bold text-gray-900">
+                            <h2 className="text-xl font-bold text-gray-900">
                               {order.orderNumber}
-                            </h3>
+                            </h2>
                             <span
                               className={`px-3 py-1 rounded-full text-sm font-semibold ${statusColor.bg} ${statusColor.text}`}
                             >
@@ -235,7 +235,7 @@ export default function OrderHistoryPage() {
               <div className="flex justify-center mb-4">
                 <Calendar className="text-gray-400" size={48} />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No Orders Found</h3>
+              <h2 className="text-lg font-semibold text-gray-900 mb-2">No Orders Found</h2>
               <p className="text-gray-600">
                 {searchQuery || statusFilter
                   ? "No orders match your search criteria. Try adjusting your filters."

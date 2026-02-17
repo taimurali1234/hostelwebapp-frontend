@@ -28,7 +28,8 @@ export default function UserNavbar() {
 
   const location = useLocation();
   const navigate = useNavigate();
-  const { cartItems = [] } = useBooking();
+  const { cartItems = [], getCartCount } = useBooking();
+  const cartCount = getCartCount();
 
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
@@ -65,17 +66,18 @@ export default function UserNavbar() {
 
   /* -------------------- LOGOUT -------------------- */
   const handleLogout = async () => {
-    try {
-      await logout();
-      disconnectSocket();
-      setShowProfile(false);
-    } catch (err) {
-      console.error("Logout failed", err);
-    } finally {
-      setUser(null);
-      navigate("/login");
-    }
-  };
+  try {
+    await logout();
+  } catch (err) {
+    console.error("Logout API failed", err);
+  } finally {
+    disconnectSocket();
+    setUser(null);
+    setShowProfile(false);
+    navigate("/login");
+  }
+};
+
  const handleMarkAsRead = async (id: string) => {
   const notif = notifications.find((n) => n.id === id);
   if (notif?.isRead) return;
@@ -134,6 +136,8 @@ const handleMarkAllAsRead = async () => {
           <div className="relative" ref={notifRef}>
             <button
               onClick={openNotifications}
+              aria-label="Toggle notifications"
+              aria-expanded={showNotifications}
               className="relative p-2 rounded-full cursor-pointer hover:bg-green-100"
             >
               <Bell size={20} />
@@ -218,12 +222,14 @@ const handleMarkAllAsRead = async () => {
                 setShowProfile(false);
                 setShowNotifications(false);
               }}
+              aria-label="Toggle cart"
+              aria-expanded={showCart}
               className="relative p-2 rounded-full cursor-pointer hover:bg-green-100"
             >
               <ShoppingCart size={20} />
-              {cartItems.length > 0 && (
+              {cartCount > 0 && (
                 <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                  {cartItems.length}
+                  {cartCount}
                 </span>
               )}
             </button>
@@ -266,6 +272,7 @@ const handleMarkAllAsRead = async () => {
                               b.image?.url ||
                               "https://via.placeholder.com/150?text=No+Image"
                             }
+                            alt={b.room?.title ? `${b.room.title} preview` : "Booked room preview"}
                             className="w-16 h-16 rounded object-cover"
                           />
                           <div>
@@ -303,6 +310,8 @@ const handleMarkAllAsRead = async () => {
                 setShowProfile((p) => !p);
                 setShowCart(false);
               }}
+              aria-label="Toggle profile menu"
+              aria-expanded={showProfile}
               className="p-2 rounded-full cursor-pointer hover:bg-green-100"
             >
               <User size={20} />
@@ -342,6 +351,8 @@ const handleMarkAllAsRead = async () => {
           {/* Mobile Toggle */}
           <button
             onClick={() => setMobileMenu((p) => !p)}
+            aria-label={mobileMenu ? "Close mobile menu" : "Open mobile menu"}
+            aria-expanded={mobileMenu}
             className="md:hidden p-2 rounded-lg hover:bg-green-100 cursor-pointer"
           >
             {mobileMenu ? <X /> : <Menu />}

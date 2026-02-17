@@ -201,6 +201,7 @@ const Orders = () => {
                     <td className="px-6 py-4 text-sm space-x-3 flex">
                       <button
                         onClick={() => handleViewBookings(order)}
+                        aria-label={`View bookings for order ${order.orderNumber}`}
                         className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 p-1 rounded transition cursor-pointer"
                         title="View Bookings"
                       >
@@ -208,6 +209,7 @@ const Orders = () => {
                       </button>
                       <button
                         onClick={() => handleEdit(order)}
+                        aria-label={`Edit order ${order.orderNumber}`}
                         className="text-yellow-600 hover:text-yellow-800 hover:bg-yellow-50 p-1 rounded transition cursor-pointer"
                         title="Edit"
                       >
@@ -215,6 +217,7 @@ const Orders = () => {
                       </button>
                       <button
                         onClick={() => handleDelete(order)}
+                        aria-label={`Delete order ${order.orderNumber}`}
                         className="text-red-600 hover:text-red-800 hover:bg-red-50 p-1 rounded transition cursor-pointer"
                         title="Delete"
                       >

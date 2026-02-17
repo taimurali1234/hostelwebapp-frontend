@@ -23,8 +23,9 @@ export const loginService = async (email: string, password: string) => {
 
 
 // services/authService.ts
-export const logout = () => {
-  localStorage.removeItem("user");
+export const logout = async () => {
+const response = await apiClient.post("/users/logout");
+  return response.data;
 };
 
 

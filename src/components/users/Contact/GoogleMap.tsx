@@ -1,3 +1,5 @@
+import React from "react";
+
 const MapSection = () => {
   return (
     <section className="w-full">
@@ -16,4 +18,4 @@ const MapSection = () => {
   );
 };
 
-export default MapSection;
+export default React.memo(MapSection);

@@ -55,6 +55,7 @@ const TeamSlider = () => {
             >
               <img
                 src={m.img}
+                alt={`${m.name} - ${m.role}`}
                 className="w-24 h-24 rounded-full mx-auto object-cover"
               />
               <h3 className="font-semibold mt-4">{m.name}</h3>

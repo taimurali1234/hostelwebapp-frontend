@@ -94,6 +94,7 @@ const VideoGallery: React.FC = () => {
     {/* Close Button */}
     <button
       onClick={() => setActiveIndex(null)}
+      aria-label="Close video player"
       className="absolute top-6 right-6 
       w-12 h-12 flex items-center justify-center
       rounded-full text-white text-2xl
@@ -107,6 +108,7 @@ const VideoGallery: React.FC = () => {
     {activeIndex > 0 && (
       <button
         onClick={() => prev()}
+        aria-label="Previous video"
         className="absolute left-6 
         w-12 h-12 flex items-center justify-center
         text-white text-3xl
@@ -122,6 +124,7 @@ const VideoGallery: React.FC = () => {
     {activeIndex < videos.length - 1 && (
       <button
         onClick={() => next()}
+        aria-label="Next video"
         className="absolute right-6 
         w-12 h-12 flex items-center justify-center
         text-white text-3xl

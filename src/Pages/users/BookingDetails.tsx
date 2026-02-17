@@ -103,7 +103,7 @@ const BookingDetails = () => {
           <div className="lg:col-span-2 space-y-6">
             {/* Dates Info */}
             <div className="bg-blue-50 border border-blue-200 rounded-2xl p-6">
-              <h3 className="font-bold text-blue-900 mb-4">Your Selected Dates</h3>
+              <h2 className="font-bold text-blue-900 mb-4">Your Selected Dates</h2>
               <div className="space-y-3">
                 <div>
                   <p className="text-xs text-blue-700 font-medium">Check-In</p>
@@ -134,7 +134,7 @@ const BookingDetails = () => {
 
             {/* Items Summary */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-              <h3 className="font-bold text-lg text-gray-800 mb-4">Booking Items</h3>
+              <h2 className="font-bold text-lg text-gray-800 mb-4">Booking Items</h2>
               <div className="space-y-4">
                 {cartItems.map((item: any, idx: number) => (
                   <div key={idx} className="border-b pb-4 last:border-b-0">
@@ -172,7 +172,7 @@ const BookingDetails = () => {
           {/* Right: Summary Box */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sticky top-6 space-y-4">
-              <h3 className="font-bold text-lg text-gray-800">Order Summary</h3>
+              <h2 className="font-bold text-lg text-gray-800">Order Summary</h2>
 
               <div className="border-t pt-4 space-y-2">
                 <div className="flex justify-between">

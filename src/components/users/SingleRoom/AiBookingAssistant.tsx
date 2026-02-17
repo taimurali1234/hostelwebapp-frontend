@@ -63,6 +63,7 @@ const AiBookingAssistant: React.FC<Props> = ({ room }) => {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
+          aria-label="Open booking assistant"
           className="fixed top-24 right-4 md:right-6 bg-linear-to-r from-green-600 to-green-700 text-white p-2 md:p-4 rounded-full shadow-lg hover:shadow-xl hover:scale-110 transition-all z-40 group"
           title="Open AI Assistant"
         >
@@ -83,13 +84,14 @@ const AiBookingAssistant: React.FC<Props> = ({ room }) => {
                 <MessageCircle size={16} />
               </div>
               <div className="min-w-0">
-                <h3 className="font-bold text-xs md:text-sm truncate">Booking Assistant</h3>
+                <p className="font-bold text-xs md:text-sm truncate">Booking Assistant</p>
                 <p className="text-xs text-green-100 hidden md:block">Powered by AI</p>
               </div>
             </div>
             <div className="flex items-center gap-0.5 md:gap-1 shrink-0">
               <button
                 onClick={() => setIsMinimized(!isMinimized)}
+                aria-label={isMinimized ? "Expand booking assistant" : "Minimize booking assistant"}
                 className="hover:bg-white/20 p-1.5 md:p-2 rounded-lg transition"
                 title={isMinimized ? "Expand" : "Minimize"}
               >
@@ -97,6 +99,7 @@ const AiBookingAssistant: React.FC<Props> = ({ room }) => {
               </button>
               <button
                 onClick={() => setIsOpen(false)}
+                aria-label="Close booking assistant"
                 className="hover:bg-white/20 p-1.5 md:p-2 rounded-lg transition"
                 title="Close"
               >
@@ -151,6 +154,7 @@ const AiBookingAssistant: React.FC<Props> = ({ room }) => {
                   <button
                     onClick={sendMessage}
                     disabled={isLoading || !input.trim()}
+                    aria-label="Send message"
                     className="bg-green-600 hover:bg-green-700 disabled:bg-gray-300 text-white p-1.5 md:p-2 rounded-lg transition-colors disabled:cursor-not-allowed shrink-0"
                   >
                     <Send size={12} />

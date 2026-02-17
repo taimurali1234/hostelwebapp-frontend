@@ -29,18 +29,17 @@ const adminUnreadCount = adminNotifications.filter((n) => !n.isRead).length;
   
 
   const handleLogout = async () => {
-    try{
-   await  logout();
-   disconnectSocket();
+  try {
+    await logout();
+  } catch (err) {
+    console.error("Logout API failed", err);
+  } finally {
+    disconnectSocket();
+    setUser(null);
+    navigate("/login");
+  }
+};
 
-    }
-    catch (err) {
-      console.error("Logout failed", err);
-    } finally {
-      setUser(null);               // frontend: clear user + localStorage
-      navigate("/login");
-    }
-  };
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -92,6 +91,8 @@ const handleMarkAllAsRead = async () => {
               setShowNotifications((p) => !p);
               setIsDropdownOpen(false);
             }}
+            aria-label="Toggle notifications"
+            aria-expanded={showNotifications}
             className="relative p-2 rounded-full cursor-pointer hover:bg-green-100"
           >
             <Bell size={20} />
@@ -171,7 +172,7 @@ const handleMarkAllAsRead = async () => {
         <div className="relative" ref={dropdownRef}>
           <img 
             src="/public/assets/profile.png" 
-            alt="" 
+            alt="Profile menu" 
             className="w-5.5 h-5.5 object-cover cursor-pointer" 
             onClick={() => {
               setIsDropdownOpen(!isDropdownOpen);

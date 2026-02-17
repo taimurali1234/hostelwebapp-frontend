@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import RoomGallery from "@/components/users/SingleRoom/RoomGallery";
 import RoomInfo from "@/components/users/SingleRoom/RoomInfo";
 import TestimonialsSection from "@/components/users/Home/TestimonialsSection";
-import AiBookingAssistant from "@/components/users/SingleRoom/AiBookingAssistant";
 import BookingBox from "@/components/users/SingleRoom/BookingBox";
 import UserLayout from "../../components/layouts/UserLayout";
 

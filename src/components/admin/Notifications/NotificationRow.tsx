@@ -103,6 +103,7 @@ export function NotificationsRow({
           {onDelete && notification.id && (
             <button
               onClick={() => onDelete(notification.id!)}
+              aria-label="Delete notification"
               className="text-red-600 hover:text-red-800 transition"
               title="Delete notification"
             >

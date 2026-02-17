@@ -36,6 +36,7 @@ const GallerySection: React.FC = () => {
   >
     <img
       src={galleryImages[0]}
+      alt="Hostel gallery image 1"
       className="rounded-2xl w-full h-full object-cover"
     />
   </div>
@@ -47,6 +48,7 @@ const GallerySection: React.FC = () => {
   >
     <img
       src={galleryImages[1]}
+      alt="Hostel gallery image 2"
       className="rounded-2xl w-full h-full object-cover"
     />
   </div>
@@ -57,6 +59,7 @@ const GallerySection: React.FC = () => {
   >
     <img
       src={galleryImages[2]}
+      alt="Hostel gallery image 3"
       className="rounded-2xl w-full h-full object-cover"
     />
   </div>
@@ -70,6 +73,7 @@ const GallerySection: React.FC = () => {
     >
       <img
         src={img}
+        alt={`Hostel gallery image ${i + 4}`}
         className="rounded-2xl w-full h-full object-cover"
       />
     </div>

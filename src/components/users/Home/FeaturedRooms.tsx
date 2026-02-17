@@ -91,6 +91,7 @@ const prev = (): void => {
             <button
   onClick={prev}
   disabled={index === 0}
+  aria-label="Previous featured rooms"
   className={`p-3 rounded-full transition
     ${
       index === 0
@@ -104,6 +105,7 @@ const prev = (): void => {
             <button
   onClick={next}
   disabled={index >= maxIndex}
+  aria-label="Next featured rooms"
   className={`p-3 rounded-full transition
     ${
       index >= maxIndex

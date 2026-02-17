@@ -17,6 +17,7 @@ import { toast } from "react-toastify";
 const BookingPage = () => {
 
   const { cartItems, updateCartItem, removeFromCart, clearCart } = useBooking();
+  console.log(cartItems)
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -27,6 +28,9 @@ const seatSignature = cartItems
 
   const [coupon, setCoupon] = useState("");
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [dateSelections, setDateSelections] = useState<
+    Record<string, { checkInDate?: string; checkOutDate?: string }>
+  >({});
 
   const [preview, setPreview] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -39,6 +43,30 @@ const seatSignature = cartItems
 
   const today = new Date().toISOString().split("T")[0];
 
+  useEffect(() => {
+    setDateSelections((prev) => {
+      const next = { ...prev };
+      const currentIds = new Set(cartItems.map((item) => item.id));
+
+      for (const item of cartItems) {
+        if (!next[item.id]) {
+          next[item.id] = {
+            checkInDate: item.checkInDate,
+            checkOutDate: item.checkOutDate,
+          };
+        }
+      }
+
+      for (const id of Object.keys(next)) {
+        if (!currentIds.has(id)) {
+          delete next[id];
+        }
+      }
+
+      return next;
+    });
+  }, [cartItems]);
+
   /* ---------------- Fetch Room Availability on Mount or Cart Change -------- */
   useEffect(() => {
     
@@ -46,7 +74,7 @@ const seatSignature = cartItems
     if (cartItems.length > 0) {
       fetchAvailability();
     }
-  }, [cartItems.length]);
+  }, [cartItems]);
   const fetchAvailability = async () => {
       const roomIds = cartItems.map(item => item.roomId);
       
@@ -86,15 +114,12 @@ const seatSignature = cartItems
 
 
   /* ---------------- Seat Change with Availability Check -------- */
-  const handleSeatChange = (
+  const handleSeatChange = async (
     id: string,
     seats: number,
-    max: number,
-    price: number,
+  maxAvailable: number,
     roomId: string
   ) => {
-    const availability = roomAvailability[roomId];
-    const maxAvailable = availability?.availableSeats || max;
 
     // Validate seat count
     if (seats < 1) {
@@ -102,8 +127,8 @@ const seatSignature = cartItems
       return;
     }
 
-    if (seats > max) {
-      toast.error(`Maximum ${max} seats available in this room`);
+    if (seats > maxAvailable) {
+      toast.error(`Maximum ${maxAvailable} seats available in this room`);
       return;
     }
 
@@ -114,10 +139,13 @@ const seatSignature = cartItems
       return;
     }
 
-    updateCartItem(id, {
-      selectedSeats: seats,
-      total: seats * price,
-    });
+    try {
+      await updateCartItem(id, {
+        selectedSeats: seats,
+      });
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "Failed to update cart item");
+    }
 
   };
 
@@ -127,13 +155,20 @@ const seatSignature = cartItems
     field: "checkInDate" | "checkOutDate",
     value: string
   ) => {
-    updateCartItem(id, { [field]: value });
+    setDateSelections((prev) => ({
+      ...prev,
+      [id]: {
+        ...prev[id],
+        [field]: value,
+      },
+    }));
   };
 
   /* ---------------- Validation ---------------- */
   const hasInvalidDates = cartItems.some((item) => {
-    if (!item.checkInDate) return true;
-    if (item.stayType === "SHORT_TERM" && !item.checkOutDate) return true;
+    const selectedDates = dateSelections[item.id] || {};
+    if (!selectedDates.checkInDate) return true;
+    if (item.stayType === "SHORT_TERM" && !selectedDates.checkOutDate) return true;
     return false;
   });
 
@@ -183,9 +218,11 @@ const seatSignature = cartItems
       roomId: item.roomId,
       bookingType: item.stayType,
 
-      checkIn: item.checkInDate,
+      checkIn: dateSelections[item.id]?.checkInDate,
       checkOut:
-        item.stayType === "SHORT_TERM" ? item.checkOutDate : null,
+        item.stayType === "SHORT_TERM"
+          ? dateSelections[item.id]?.checkOutDate || null
+          : null,
 
       seatsSelected: item.selectedSeats,
 
@@ -270,7 +307,12 @@ const seatSignature = cartItems
                   Booking Items ({cartItems.length})
                 </h2>
 
-                {cartItems.map((item) => (
+                {cartItems.map((item) => {
+                  console.log(item)
+                  console.log(`Rendering item ${item.id} with roomId ${item.roomId} and availableSeats:`, roomAvailability[item.roomId]?.availableSeats);
+                  const availableSeats =    item.room.availableSeats;
+    console.log(`Rendering item ${item.id} with availableSeats:`, availableSeats);
+                  return (
                   <div
                     key={item.id}
                     className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition"
@@ -323,7 +365,7 @@ const seatSignature = cartItems
                                 <input
                                   type="date"
                                   min={today}
-                                  value={item.checkInDate || ""}
+                                  value={dateSelections[item.id]?.checkInDate || ""}
                                   onChange={(e) =>
                                     handleDateChange(
                                       item.id,
@@ -343,8 +385,8 @@ const seatSignature = cartItems
                                   </label>
                                   <input
                                     type="date"
-                                    min={item.checkInDate || today}
-                                    value={item.checkOutDate || ""}
+                                    min={dateSelections[item.id]?.checkInDate || today}
+                                    value={dateSelections[item.id]?.checkOutDate || ""}
                                     onChange={(e) =>
                                       handleDateChange(
                                         item.id,
@@ -373,12 +415,12 @@ const seatSignature = cartItems
                                       handleSeatChange(
                                         item.id,
                                         item.selectedSeats - 1,
-                                        item.room.beds,
-                                        item.priceWithTax,
+                                        availableSeats,
                                         item.roomId
                                       )
                                     }
                                     disabled={item.selectedSeats <= 1}
+                                    aria-label={`Decrease seats for ${item.room.title}`}
                                     className="p-1 hover:bg-white rounded transition disabled:opacity-50 cursor-pointer"
                                   >
                                     <Minus size={14} />
@@ -394,7 +436,6 @@ const seatSignature = cartItems
                                         item.id,
                                         parseInt(e.target.value) || 1,
                                         item.room.beds,
-                                        item.priceWithTax,
                                         item.roomId
                                       )
                                     }
@@ -402,19 +443,16 @@ const seatSignature = cartItems
                                   />
 
                                   <button
-                                    onClick={() =>
-                                      handleSeatChange(
-                                        item.id,
-                                        item.selectedSeats + 1,
-                                        item.room.availableSeats,
-                                        item.priceWithTax,
-                                        item.roomId
-                                      )
-                                    }
-                                    disabled={
-                                      item.selectedSeats >= item.room.availableSeats ||
-                                      item.selectedSeats >= (roomAvailability[item.roomId]?.availableSeats || item.room.availableSeats)
-                                    }
+                                     onClick={() =>
+    handleSeatChange(
+      item.id,
+      item.selectedSeats + 1,
+      availableSeats,
+      item.roomId
+    )
+  }
+  disabled={item.selectedSeats >= availableSeats}
+                                    aria-label={`Increase seats for ${item.room.title}`}
                                     className="p-1 hover:bg-white rounded transition disabled:opacity-50 cursor-pointer"
                                   >
                                     <Plus size={14} />
@@ -422,7 +460,7 @@ const seatSignature = cartItems
                                 </div>
 
                                 <span className="text-xs text-gray-600">
-                                  Max: {item.room.availableSeats} seat{item.room.availableSeats !== 1 ? 's' : ''} available 
+                                  Max: {availableSeats} seat{availableSeats !== 1 ? 's' : ''} available 
                                 </span>
                               </div>
 
@@ -450,6 +488,7 @@ const seatSignature = cartItems
 
                               <button
                                 onClick={() => setDeleteItemId(item.id)}
+                                aria-label={`Remove ${item.room.title} from cart`}
                                 className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition cursor-pointer"
                               >
                                 <Trash2 size={18} />
@@ -461,8 +500,10 @@ const seatSignature = cartItems
                       </div>
                     </div>
                   </div>
-                ))}
+                  )
+                })} 
               </div>
+
 
               {/* RIGHT SIDE SUMMARY */}
               <div className="lg:col-span-1">
