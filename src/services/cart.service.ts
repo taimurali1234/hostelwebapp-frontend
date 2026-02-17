@@ -16,7 +16,7 @@ export interface UpdateCartItemPayload {
 
 export const cartService = {
   async getCart() {
-    const response = await apiClient.get("/cart");
+    const response = await apiClient.get("/cart/items");
     return response.data?.data ?? response.data;
   },
 
