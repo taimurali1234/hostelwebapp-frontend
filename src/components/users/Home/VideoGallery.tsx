@@ -8,11 +8,11 @@ interface VideoItem {
 }
 
 const videos: VideoItem[] = [
-  { id: 1, src: "/assets/cld-sample-video.webm" },
-  { id: 2, src: "/assets/sea-turtle.mp4" },
-    { id: 3, src: "/assets/cld-sample-video.webm" },
-    { id: 4, src: "/assets/sea-turtle.mp4" },
-    { id: 5, src: "/assets/cld-sample-video.webm" },
+  { id: 1, src: "https://res.cloudinary.com/taimurali/video/upload/w_720,q_auto,f_auto/v1710704850/samples/cld-sample-video.mp4" },
+  { id: 2, src: "https://res.cloudinary.com/taimurali/video/upload/w_720,q_auto,f_auto/v1710704850/samples/sea-turtle.mp4" },
+    { id: 3, src: "https://res.cloudinary.com/taimurali/video/upload/w_720,q_auto,f_auto/v1710704850/samples/cld-sample-video.webm" },
+    { id: 4, src: "https://res.cloudinary.com/taimurali/video/upload/w_720,q_auto,f_auto/v1710704850/samples/sea-turtle.mp4" },
+    { id: 5, src: "https://res.cloudinary.com/taimurali/video/upload/w_720,q_auto,f_auto/v1710704850/samples/cld-sample-video.webm" },
 ];
 
 const VideoGallery: React.FC = () => {
@@ -139,6 +139,7 @@ const VideoGallery: React.FC = () => {
     {/* Video Layer (Click-through) */}
     <div className="relative z-[60] pointer-events-none">
       <video
+      preload="none"
         src={videos[activeIndex].src}
         autoPlay
         controls

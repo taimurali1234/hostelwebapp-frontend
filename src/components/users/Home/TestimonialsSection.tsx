@@ -39,7 +39,7 @@ const reviews: Review[] = [
       "Affordable and convenient. The shared kitchen is well-equipped and I made many friends here. Highly recommend for international students!",
   },
   {
-    id: 3,
+    id: 4,
     name: "Emily Rodriguez",
     role: "Exchange Student",
     avatar: "https://randomuser.me/api/portraits/women/65.jpg",
@@ -48,7 +48,7 @@ const reviews: Review[] = [
       "Affordable and convenient. The shared kitchen is well-equipped and I made many friends here. Highly recommend for international students!",
   },
   {
-    id: 3,
+    id: 5,
     name: "Emily Rodriguez",
     role: "Exchange Student",
     avatar: "https://randomuser.me/api/portraits/women/65.jpg",
@@ -57,7 +57,7 @@ const reviews: Review[] = [
       "Affordable and convenient. The shared kitchen is well-equipped and I made many friends here. Highly recommend for international students!",
   },
   {
-    id: 3,
+    id: 6,
     name: "Emily Rodriguez",
     role: "Exchange Student",
     avatar: "https://randomuser.me/api/portraits/women/65.jpg",
@@ -75,7 +75,7 @@ const TestimonialsSection: React.FC = () => {
       className="relative bg-cover bg-center py-20 overflow-hidden px-6 "
       style={{
         backgroundImage:
-          "url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c')",
+          "url('https://res.cloudinary.com/taimurali/image/upload/f_auto,q_auto,w_1600/photo-1600585154340-be6161a56a0c_lw3jej')",
       }}
     >
       {/* Overlay */}
@@ -93,11 +93,11 @@ const TestimonialsSection: React.FC = () => {
       <div className="relative overflow-hidden">
         {/* Left Shadow */}
   <div className="pointer-events-none absolute left-0 top-0 h-full w-24 
-  bg-gradient-to-r from-black/70 to-transparent z-10" />
+  bg-linear-to-r from-black/70 to-transparent z-10" />
 
   {/* Right Shadow */}
   <div className="pointer-events-none absolute right-0 top-0 h-full w-24 
-  bg-gradient-to-l from-black/70 to-transparent z-10" />
+  bg-linear-to-l from-black/70 to-transparent z-10" />
         <div className="flex animate-marquee ">
 
           {[...reviews, ...reviews].map((review, i) => (

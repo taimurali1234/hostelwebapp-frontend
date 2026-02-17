@@ -1,6 +1,6 @@
   import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
   import routes from "./routes/AppRoutes";
-  import {   lazy, Suspense, type ReactElement } from "react";
+  import {   lazy, Suspense, useEffect, useState, type ReactElement } from "react";
   import { ToastContainer } from "react-toastify";
   import "react-toastify/dist/ReactToastify.css";
   import { AuthProvider } from "./context/AuthContext";
@@ -24,6 +24,14 @@ import PageLoader from "./components/common/PageLoader";
   const typedRoutes = routes as AppRoutes;
 
   const AppContent = () => {
+      const [showAI, setShowAI] = useState(false);
+useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowAI(true);
+    }, 4000); // load after 4s
+
+    return () => clearTimeout(timer);
+  }, []);
     
     const renderRoutes = (routesArray: RouteType[]) =>
       routesArray.map(({ path, element }) => (
@@ -40,9 +48,11 @@ import PageLoader from "./components/common/PageLoader";
           pauseOnHover
           draggable
         />
-        <Suspense fallback={<PageLoader />}>  
-        <AIAssistant />
-        </Suspense>
+        {showAI && (
+  <Suspense fallback={null}>
+    <AIAssistant />
+  </Suspense>
+)}
         <main>
             <Suspense fallback={<PageLoader />}>
           <Routes>

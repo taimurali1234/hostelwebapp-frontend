@@ -3,10 +3,10 @@ import Button from "../../common/Button";
 import { motion, AnimatePresence } from "framer-motion";
 
 const images = [
-  "https://res.cloudinary.com/taimurali/image/upload/f_webp,q_auto,w_1600/estateapp/cppqzckli7g92t5vk05e",
-  "https://res.cloudinary.com/taimurali/image/upload/f_webp,q_auto,w_1600/estateapp/kloohuynoyoy9sprxy0q",
-  "https://res.cloudinary.com/taimurali/image/upload/f_webp,q_auto,w_1600/estateapp/y7nms245pi5azbfjlh2m",
-  "https://res.cloudinary.com/taimurali/image/upload/f_webp,q_auto,w_1600/estateapp/wkt2tbc7kiz8svqnzehw",
+  "https://res.cloudinary.com/taimurali/image/upload/f_webp,q_auto,w_1200/estateapp/cppqzckli7g92t5vk05e",
+  "https://res.cloudinary.com/taimurali/image/upload/f_webp,q_auto,w_1200/estateapp/kloohuynoyoy9sprxy0q",
+  "https://res.cloudinary.com/taimurali/image/upload/f_webp,q_auto,w_1200/estateapp/y7nms245pi5azbfjlh2m",
+  "https://res.cloudinary.com/taimurali/image/upload/f_webp,q_auto,w_1200/estateapp/wkt2tbc7kiz8svqnzehw",
 ];
 
 export default function HeroSection() {
