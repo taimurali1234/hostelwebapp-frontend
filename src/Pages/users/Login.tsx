@@ -62,6 +62,23 @@ export default function Login() {
     }
   }, [searchParams]);
 
+  const getErrorMessage = (err: unknown, fallback: string): string => {
+    if (err && typeof err === "object") {
+      const message = (err as { message?: unknown }).message;
+      if (typeof message === "string" && message.trim()) {
+        return message;
+      }
+
+      const backendMessage = (err as { response?: { data?: { message?: unknown } } })
+        .response?.data?.message;
+      if (typeof backendMessage === "string" && backendMessage.trim()) {
+        return backendMessage;
+      }
+    }
+
+    return fallback;
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -87,11 +104,11 @@ const res = await loginService(
 
       setToast("🎉 Login successful! Redirecting...");
       
-    } catch (err: any) {
+    } catch (err: unknown) {
       // ✅ FIXED ZOD ERROR HANDLING
       if (err instanceof z.ZodError) {
         setError(err.issues[0]?.message || "Invalid input");
-      } else if (err?.message?.toLowerCase().includes("verify")) {
+      } else if (getErrorMessage(err, "").toLowerCase().includes("verify")) {
         // Unverified email case
         setError(
           "You are not verified. Please check your email and click the verification link."
@@ -99,13 +116,8 @@ const res = await loginService(
         setResendEmail(form.email);
         setShowResendModal(true);
       } else {
-  const backendMessage =
-    err?.response?.data?.message || 
-    err?.message || 
-    "Login failed. Please try again.";
-
-  setError(backendMessage);
-}
+        setError(getErrorMessage(err, "Login failed. Please try again."));
+      }
     } finally {
       setLoading(false);
     }
@@ -120,10 +132,7 @@ const res = await loginService(
   try {
     setResendLoading(true);
 
-    const response = await resendVerificationEmail(resendEmail);
-
-    // ✅ Axios already gives parsed data
-    const data = response.data;
+    await resendVerificationEmail(resendEmail);
 
     setSuccess("Verification link sent! Please check your email.");
     setToast("✉️ Verification link resent to your email!");
@@ -134,12 +143,8 @@ const res = await loginService(
       setToast("");
     }, 3000);
 
-  } catch (err: any) {
-    const backendMessage =
-      err?.response?.data?.message ||
-      "Failed to resend verification link. Please try again.";
-
-    setError(backendMessage);
+  } catch (err: unknown) {
+    setError(getErrorMessage(err, "Failed to resend verification link. Please try again."));
   } finally {
     setResendLoading(false);
   }
@@ -148,7 +153,7 @@ const res = await loginService(
   
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-y-auto lg:overflow-hidden relative">
+    <div className="min-h-screen flex flex-col lg:flex-row bg-linear-to-br from-slate-900 via-slate-800 to-slate-900 overflow-y-auto lg:overflow-hidden relative">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 -right-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
@@ -168,7 +173,7 @@ const res = await loginService(
         <div className="w-full max-w-md space-y-6 lg:space-y-8 animate-fade-in">
           {/* Header */}
           <div className="space-y-3">
-            <h1 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+            <h1 className="text-4xl lg:text-5xl font-bold bg-linear-to-br from-blue-400 to-purple-400 bg-clip-text text-transparent">
               Welcome back!
             </h1>
             <p className="text-gray-400 text-lg">
@@ -297,7 +302,7 @@ const res = await loginService(
             disabled={loading}
             className="w-full relative group overflow-hidden rounded-xl px-6 py-4 font-semibold text-white transition-all duration-300 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 group-hover:from-blue-500 group-hover:via-purple-500 group-hover:to-pink-500 transition-all duration-300"></div>
+            <div className="absolute inset-0 bg-linear-to-br from-blue-600 via-purple-600 to-pink-600 group-hover:from-blue-500 group-hover:via-purple-500 group-hover:to-pink-500 transition-all duration-300"></div>
             <div className="absolute inset-0 opacity-0 group-hover:opacity-20 bg-white"></div>
             <span className="relative flex items-center justify-center gap-2">
               {loading ? (
@@ -326,14 +331,14 @@ const res = await loginService(
 
       {/* RIGHT IMAGE */}
       <div className="hidden lg:flex lg:w-1/2 items-center justify-center relative overflow-hidden max-h-screen">
-        <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-slate-900 z-10"></div>
+        <div className="absolute inset-0 bg-linear-to-l from-transparent via-transparent to-slate-900 z-10"></div>
         <div className="relative w-full h-full overflow-hidden">
           <img
             src="/public/assets/vila.png"
             alt="Villa"
             className="h-full w-full object-cover scale-110 hover:scale-120 transition-transform duration-500"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent opacity-50"></div>
+          <div className="absolute inset-0 bg-linear-to-t from-slate-900 via-transparent to-transparent opacity-50"></div>
         </div>
       </div>
 
@@ -384,7 +389,7 @@ const res = await loginService(
               <button
                 onClick={handleResendVerification}
                 disabled={resendLoading}
-                className="flex-1 px-4 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold hover:opacity-90 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                className="flex-1 px-4 py-2 rounded-lg bg-linear-to-r from-blue-600 to-purple-600 text-white font-semibold hover:opacity-90 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {resendLoading ? (
                   <>
@@ -461,3 +466,4 @@ const res = await loginService(
     </div>
   );
 }
+

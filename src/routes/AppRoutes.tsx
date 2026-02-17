@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy } from "react";
 const Home = lazy(() => import("../Pages/users/Home"));
 const Dashboard =  lazy(() => import("../Pages/admin/Dashboard"));
 const Rooms = lazy(() => import("../Pages/admin/Rooms"));
