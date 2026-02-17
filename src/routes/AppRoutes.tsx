@@ -12,9 +12,9 @@ const Notifications = lazy(() => import("../Pages/admin/Notifications"));
 const Payments = lazy(() => import("../Pages/admin/Payments"));
 const Analytics = lazy(() => import("../Pages/admin/Analytics"));
 
-import Login from "../Pages/users/Login";
-import Signup from "../Pages/users/Signup";
-import ResetPassword from "../components/auth/ResetPassword";
+const Login = lazy(() => import("../Pages/users/Login"));
+const Signup = lazy(() => import("../Pages/users/Signup"));
+const ResetPassword = lazy(() => import("../components/auth/ResetPassword"));
 const OrderDetailsPage = lazy(() => import("../Pages/users/OrderDetails"));
 const OrderHistoryPage = lazy(() => import("../Pages/users/OrderHistory"));
 
