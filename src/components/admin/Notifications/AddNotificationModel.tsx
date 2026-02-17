@@ -115,10 +115,12 @@ export default function AddNotificationModal({
 
         {/* Title */}
         <div>
-          <label className="block text-sm font-medium mb-1">
+          <label htmlFor="notification-title" className="block text-sm font-medium mb-1">
             Title (Optional)
           </label>
           <input
+            id="notification-title"
+            name="title"
             className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Notification title"
             value={form.title}
@@ -129,10 +131,12 @@ export default function AddNotificationModal({
 
         {/* Message */}
         <div>
-          <label className="block text-sm font-medium mb-1">
+          <label htmlFor="notification-message" className="block text-sm font-medium mb-1">
             Message <span className="text-red-500">*</span>
           </label>
           <textarea
+            id="notification-message"
+            name="message"
             className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Notification message"
             rows={4}
@@ -144,10 +148,12 @@ export default function AddNotificationModal({
 
         {/* Audience */}
         <div>
-          <label className="block text-sm font-medium mb-1">
+          <label htmlFor="notification-audience" className="block text-sm font-medium mb-1">
             Audience <span className="text-red-500">*</span>
           </label>
           <select
+            id="notification-audience"
+            name="audience"
             className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={form.audience}
             onChange={(e) =>
@@ -167,10 +173,12 @@ export default function AddNotificationModal({
         {/* User ID - Conditional */}
         {form.audience === "USER" && (
           <div>
-            <label className="block text-sm font-medium mb-1">
+            <label htmlFor="notification-user-id" className="block text-sm font-medium mb-1">
               User ID <span className="text-red-500">*</span>
             </label>
             <input
+              id="notification-user-id"
+              name="userId"
               className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter user ID"
               value={form.userId || ""}
@@ -182,10 +190,12 @@ export default function AddNotificationModal({
 
         {/* Severity */}
         <div>
-          <label className="block text-sm font-medium mb-1">
+          <label htmlFor="notification-severity" className="block text-sm font-medium mb-1">
             Severity <span className="text-red-500">*</span>
           </label>
           <select
+            id="notification-severity"
+            name="severity"
             className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={form.severity}
             onChange={(e) =>

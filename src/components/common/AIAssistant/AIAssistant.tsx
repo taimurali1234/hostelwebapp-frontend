@@ -370,6 +370,8 @@ console.log("Welcome response:", welcomeResponse);
         {/* Language Selector */}
         <div className="ai-assistant-controls">
           <select
+            id="assistant-language"
+            name="language"
             value={currentLanguage}
             onChange={handleLanguageChange}
             className="ai-assistant-language-select"
@@ -388,6 +390,8 @@ console.log("Welcome response:", welcomeResponse);
         >
           <div className="ai-assistant-input-group">
             <input
+              id="assistant-message"
+              name="message"
               ref={inputRef}
               type="text"
               value={inputValue}

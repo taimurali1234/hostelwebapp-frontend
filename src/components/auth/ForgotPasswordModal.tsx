@@ -85,7 +85,7 @@ export default function ForgotPasswordModal({
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label htmlFor="forgot-email" className="block text-sm font-semibold text-gray-700 mb-2">
                   Email Address
                 </label>
                 <div className="relative">
@@ -94,6 +94,8 @@ export default function ForgotPasswordModal({
                     className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
                   />
                   <input
+                    id="forgot-email"
+                    name="email"
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}

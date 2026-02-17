@@ -22,12 +22,12 @@ export default function Button({
 
   const variants = {
     primary:
-      "bg-green-600 text-white hover:bg-green-700 shadow-lg",
+      "bg-green-700 text-white hover:bg-green-800 shadow-lg",
     secondary:
       "bg-white text-gray-900 hover:bg-gray-100 border border-gray-200",
   };
 
-  const handleClick = () => {
+  const handleClick = () => {   
     if (onClick) {
       onClick();
     } else if (href) {

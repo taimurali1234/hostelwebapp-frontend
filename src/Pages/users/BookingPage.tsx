@@ -363,6 +363,8 @@ const seatSignature = cartItems
                                   Check-In <span className="text-red-500">*</span>
                                 </label>
                                 <input
+                                  name={`check-in-${item.id}`}
+                                  id={`check-in-${item.id}`}
                                   type="date"
                                   min={today}
                                   value={dateSelections[item.id]?.checkInDate || ""}
@@ -384,6 +386,8 @@ const seatSignature = cartItems
                                     <span className="text-red-500">*</span>
                                   </label>
                                   <input
+                                    name={`check-out-${item.id}`}
+                                    id={`check-out-${item.id}`}
                                     type="date"
                                     min={dateSelections[item.id]?.checkInDate || today}
                                     value={dateSelections[item.id]?.checkOutDate || ""}
@@ -427,6 +431,8 @@ const seatSignature = cartItems
                                   </button>
 
                                   <input
+                                    name={`selected-seats-${item.id}`}
+                                    id={`selected-seats-${item.id}`}
                                     type="number"
                                     min="1"
                                     max={item.room.availableSeats}
@@ -590,6 +596,8 @@ const seatSignature = cartItems
                       </label>
                       <div className="flex gap-2">
                         <input
+                          id="coupon-code"
+                          name="couponCode"
                           placeholder="Enter coupon code"
                           value={coupon}
                           onChange={(e) => {

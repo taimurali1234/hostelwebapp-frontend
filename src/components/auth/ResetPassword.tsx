@@ -180,7 +180,7 @@ export default function ResetPassword() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <label className="block text-sm font-semibold text-gray-300">
+            <label htmlFor="new-password" className="block text-sm font-semibold text-gray-300">
               New Password
             </label>
             <div className="relative">
@@ -189,6 +189,8 @@ export default function ResetPassword() {
                 <div className="bg-slate-800 rounded-md px-4 py-3 flex items-center gap-3 focus-within:bg-slate-700 transition-colors">
                   <Lock size={18} className="text-gray-400" />
                   <input
+                    id="new-password"
+                    name="newPassword"
                     type={showNewPassword ? "text" : "password"}
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
@@ -211,7 +213,7 @@ export default function ResetPassword() {
           </div>
 
           <div className="space-y-2">
-            <label className="block text-sm font-semibold text-gray-300">
+            <label htmlFor="confirm-password" className="block text-sm font-semibold text-gray-300">
               Confirm Password
             </label>
             <div className="relative">
@@ -220,6 +222,8 @@ export default function ResetPassword() {
                 <div className="bg-slate-800 rounded-md px-4 py-3 flex items-center gap-3 focus-within:bg-slate-700 transition-colors">
                   <Lock size={18} className="text-gray-400" />
                   <input
+                    id="confirm-password"
+                    name="confirmPassword"
                     type={showConfirmPassword ? "text" : "password"}
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}

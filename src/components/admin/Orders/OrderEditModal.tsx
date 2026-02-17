@@ -50,10 +50,12 @@ export default function OrderEditModal({
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Order Info */}
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
+            <label htmlFor="order-number" className="block text-sm font-medium text-gray-700">
               Order Number
             </label>
             <input
+              id="order-number"
+              name="orderNumber"
               type="text"
               value={order.orderNumber}
               disabled
@@ -62,10 +64,12 @@ export default function OrderEditModal({
           </div>
 
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
+            <label htmlFor="order-customer" className="block text-sm font-medium text-gray-700">
               Customer
             </label>
             <input
+              id="order-customer"
+              name="customer"
               type="text"
               value={order.user?.name || "N/A"}
               disabled
@@ -74,10 +78,12 @@ export default function OrderEditModal({
           </div>
 
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
+            <label htmlFor="order-total-amount" className="block text-sm font-medium text-gray-700">
               Total Amount
             </label>
             <input
+              id="order-total-amount"
+              name="totalAmount"
               type="text"
               value={`PKR ${order.totalAmount.toLocaleString()}`}
               disabled
@@ -86,10 +92,12 @@ export default function OrderEditModal({
           </div>
 
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
+            <label htmlFor="order-bookings-count" className="block text-sm font-medium text-gray-700">
               Number of Bookings
             </label>
             <input
+              id="order-bookings-count"
+              name="bookingsCount"
               type="text"
               value={order.bookings?.length || 0}
               disabled
@@ -99,10 +107,12 @@ export default function OrderEditModal({
 
           {/* Status */}
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
+            <label htmlFor="order-status" className="block text-sm font-medium text-gray-700">
               Status <span className="text-red-500">*</span>
             </label>
             <select
+              id="order-status"
+              name="status"
               value={status}
               onChange={(e) => setStatus(e.target.value as "PENDING" | "RESERVED" | "CONFIRMED" | "CANCELLED" | "COMPLETED")}
               disabled={isLoading}
