@@ -29,6 +29,8 @@ const SingleRoom = lazy(() => import("../Pages/users/SingleRoom"));
 const BookingPage = lazy(() => import("../Pages/users/BookingPage"));
 const BookingDetails = lazy(() => import("../Pages/users/BookingDetails"));
 const BookingConfirmation = lazy(() => import("../Pages/users/BookingConfirmation"));
+const PaymentSuccess = lazy(() => import("../Pages/PaymentSuccess"));
+const PaymentFailed = lazy(() => import("../Pages/PaymentFailed"));
 
 const routes = {
   public: [
@@ -131,6 +133,14 @@ const routes = {
       allowedRoles={["USER", "ADMIN", "COORDINATOR"]}
     />
   ),
+},
+{
+  path: "/payment-success",
+  element: <PaymentSuccess />,
+},
+{
+  path: "/payment-failed",
+  element: <PaymentFailed />,
 },
 // {
 //   path: "/orders",

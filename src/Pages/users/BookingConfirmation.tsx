@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { CheckCircle, Mail } from "lucide-react";
 import UserLayout from "@/components/layouts/UserLayout";
+import PaymentMethodModal from "@/components/payment/PaymentMethodModal";
 import apiClient from "@/services/apiClient";
 import { toast } from "react-toastify";
 
@@ -14,6 +15,7 @@ const BookingConfirmation = () => {
   const [order, setOrder] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
   /* ---------------- Fetch Order Details ---------------- */
   useEffect(() => {
@@ -117,6 +119,9 @@ const BookingConfirmation = () => {
 
   const getDefaultImage = (room: any) =>
     room?.images?.length > 0 ? room.images[0].url : "/default-room.jpg";
+
+  const bookingIdForPayment = order?.id ?? order?.bookingId ?? orderId;
+  const amountForPayment = Number(order?.totalAmount ?? 0);
 
   return (
     <UserLayout>
@@ -242,9 +247,7 @@ const BookingConfirmation = () => {
             {/* Actions */}
             <div className="grid grid-cols-2 gap-4">
               <button
-                onClick={() =>
-                  navigate("/payment", { state: { orderId: order.id } })
-                }
+                onClick={() => setIsPaymentModalOpen(true)}
                 className="bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-bold cursor-pointer"
               >
                 Proceed To Payment
@@ -260,6 +263,13 @@ const BookingConfirmation = () => {
           </div>
         </div>
       </div>
+
+      <PaymentMethodModal
+        bookingId={bookingIdForPayment}
+        amount={amountForPayment}
+        isOpen={isPaymentModalOpen}
+        onClose={() => setIsPaymentModalOpen(false)}
+      />
     </UserLayout>
   );
 };

@@ -12,7 +12,8 @@ import {
 import UserLayout from "../../components/layouts/UserLayout";
 import { useUserOrders } from "../../hooks/useUserOrders";
 import Pagination from "../../components/common/Pagination";
-import type { BookingStatus } from "../../types/order.types";
+import PaymentMethodModal from "../../components/payment/PaymentMethodModal";
+import type { BookingStatus, OrderItem } from "../../types/order.types";
 
 const statusColors: Record<BookingStatus, { bg: string; text: string; border: string }> = {
   PENDING: { bg: "bg-yellow-100", text: "text-yellow-800", border: "border-yellow-300" },
@@ -36,6 +37,8 @@ export default function OrderHistoryPage() {
   const [searchInput, setSearchInput] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState<OrderItem | null>(null);
 
   const { orders, loading, error, total, page, limit, refetch } = useUserOrders({
     page: 1,
@@ -60,6 +63,11 @@ export default function OrderHistoryPage() {
 
   const handleViewDetails = (orderId: string) => {
     navigate(`/orders/${orderId}`);
+  };
+
+  const handleContinuePayment = (order: OrderItem) => {
+    setSelectedBooking(order);
+    setIsPaymentModalOpen(true);
   };
 
   if (error && !loading && orders.length === 0) {
@@ -214,13 +222,23 @@ export default function OrderHistoryPage() {
                         </div>
 
                         {/* Action Button */}
-                        <button
-                          onClick={() => handleViewDetails(order.id)}
-                          className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer"
-                        >
-                          View Details
-                          <ChevronRight size={20} />
-                        </button>
+                        <div className="flex items-center gap-2">
+                          {order.status === "PENDING" && (
+                            <button
+                              onClick={() => handleContinuePayment(order)}
+                              className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors whitespace-nowrap cursor-pointer"
+                            >
+                              Continue Payment
+                            </button>
+                          )}
+                          <button
+                            onClick={() => handleViewDetails(order.id)}
+                            className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer"
+                          >
+                            View Details
+                            <ChevronRight size={20} />
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -257,6 +275,13 @@ export default function OrderHistoryPage() {
           )}
         </div>
       </div>
+
+      <PaymentMethodModal
+        isOpen={isPaymentModalOpen}
+        bookingId={selectedBooking?.id || ""}
+        amount={selectedBooking?.totalAmount || 0}
+        onClose={() => setIsPaymentModalOpen(false)}
+      />
     </UserLayout>
   );
 }
