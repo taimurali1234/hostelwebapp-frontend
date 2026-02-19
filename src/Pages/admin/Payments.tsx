@@ -73,7 +73,7 @@ export default function Payments() {
     return payments.filter((payment) => {
       const matchesSearch =
         !search ||
-        payment.bookingId.toLowerCase().includes(search) ||
+        payment.bookingOrderId.toLowerCase().includes(search) ||
         payment.transactionId.toLowerCase().includes(search);
 
       const matchesMethod =
@@ -101,7 +101,7 @@ export default function Payments() {
     payment: BackendPayment
   ): PaymentRowType => ({
     id: payment.id || "",
-    bookingId:
+    bookingOrderId:
       payment.bookingOrderId ||
       payment.bookingOrder?.id ||
       "-",
@@ -120,6 +120,7 @@ export default function Payments() {
       const res = await apiClient.get<BackendPaymentsResponse>(
         "/payments"
       );
+      console.log("Fetched payments response:", res.data);
 
       const list = Array.isArray(res.data?.data)
         ? res.data.data

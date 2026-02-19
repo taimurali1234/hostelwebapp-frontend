@@ -2,7 +2,7 @@ import { Eye, Trash2 } from "lucide-react";
 
 export interface PaymentRowType {
   id: string;
-  bookingId: string;
+  bookingOrderId: string;
   transactionId: string;
   paidAmount: number | null;
   paymentMethod: string;
@@ -21,7 +21,7 @@ export function PaymentRow({
     <tr className="border-b last:border-none">
       {/* Booking ID */}
       <td className="px-6 py-4">
-        {payment.bookingId}
+        {payment.bookingOrderId}
       </td>
 
       {/* Transaction ID */}
