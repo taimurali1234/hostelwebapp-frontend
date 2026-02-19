@@ -175,7 +175,7 @@ export default function Payments() {
 
     try {
       setDeleteLoading(true);
-      await apiClient.delete(`/api/payments/${deletingPayment.id}`);
+      await apiClient.delete(`/payments/${deletingPayment.id}`);
       toast.success("Payment deleted successfully");
       setDeletingPayment(null);
       await fetchPayments();
