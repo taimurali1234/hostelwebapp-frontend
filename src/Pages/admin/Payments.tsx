@@ -85,7 +85,7 @@ export default function Payments() {
   const fetchPayments = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await apiClient.get<PaymentsResponse>("/api/payments");
+      const res = await apiClient.get<PaymentsResponse>("/payments");
       setPayments(Array.isArray(res.data?.data) ? res.data.data : []);
     } catch {
       setPayments([]);
