@@ -1,4 +1,4 @@
-  import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+  import { BrowserRouter as Router, Route, Routes, useLocation } from "react-router-dom";
   import routes from "./routes/AppRoutes";
   import {   lazy, Suspense, useEffect, useState, type ReactElement } from "react";
   import { ToastContainer } from "react-toastify";
@@ -25,6 +25,8 @@ import PageLoader from "./components/common/PageLoader";
 
   const AppContent = () => {
       const [showAI, setShowAI] = useState(false);
+      const location = useLocation();
+      const isAdminRoute = location.pathname.startsWith("/admin");
 useEffect(() => {
     const timer = setTimeout(() => {
       setShowAI(true);
@@ -48,7 +50,7 @@ useEffect(() => {
           pauseOnHover
           draggable
         />
-        {showAI && (
+        {showAI && !isAdminRoute && (
   <Suspense fallback={null}>
     <AIAssistant />
   </Suspense>

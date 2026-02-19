@@ -1,17 +1,21 @@
 import { Eye, Trash2 } from "lucide-react";
 
 export interface PaymentRowType {
+  id: string;
   bookingId: string;
   transactionId: string;
-  paymentMethod: "CASH" | "CARD" | "ONLINE" | "BANK_TRANSFER";
-  paymentStatus: "PAID" | "PENDING" | "FAILED" | "REFUNDED";
+  paidAmount: number | null;
+  paymentMethod: string;
+  paymentStatus: string;
   date: string;
 }
 
 export function PaymentRow({
   payment,
+  onDelete,
 }: {
   payment: PaymentRowType;
+  onDelete: (payment: PaymentRowType) => void;
 }) {
   return (
     <tr className="border-b last:border-none">
@@ -28,6 +32,13 @@ export function PaymentRow({
       {/* Payment Method */}
       <td className="px-6 py-4 text-gray-600">
         {payment.paymentMethod}
+      </td>
+
+      {/* Paid Amount */}
+      <td className="px-6 py-4 text-gray-600">
+        {typeof payment.paidAmount === "number"
+          ? `PKR ${payment.paidAmount.toLocaleString()}`
+          : "-"}
       </td>
 
       {/* Payment Status */}
@@ -60,6 +71,7 @@ export function PaymentRow({
             size={18}
           />
           <Trash2
+            onClick={() => onDelete(payment)}
             className="cursor-pointer text-red-500"
             size={18}
           />

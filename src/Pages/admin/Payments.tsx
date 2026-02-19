@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import AdminLayout from "../../components/layouts/AdminLayout";
 import PaymentHeader from "../../components/admin/Payments/PaymentsHeader";
 import { PaymentFilters } from "../../components/admin/Payments/PaymentsFilters";
@@ -10,6 +10,9 @@ import { TableHeader } from "../../components/common/TableHeader";
 import { TableCellLoader } from "../../components/common/Loader";
 import { useDebounce } from "../../hooks/useDebounce";
 import PaymentStats from "../../components/admin/Payments/PaymentStats";
+import apiClient from "../../services/apiClient";
+import { toast } from "react-toastify";
+import DeleteOrderModal from "../../components/admin/Orders/DeleteOrderModal";
 
 interface PaymentFiltersState {
   search: string;
@@ -21,10 +24,30 @@ const columns = [
   "Booking ID",
   "Transaction ID",
   "Method",
+  "Paid Amount",
   "Status",
   "Date",
   "Actions",
 ];
+
+interface BackendPayment {
+  id?: string;
+  bookingOrderId?: string;
+  transactionId?: string;
+  amountPaid?: number;
+  paymentMethod?: string;
+  paymentStatus?: string;
+  createdAt?: string;
+  bookingOrder?: {
+    id?: string;
+  };
+}
+
+interface BackendPaymentsResponse {
+  success?: boolean;
+  data?: BackendPayment[];
+  payments?: BackendPayment[];
+}
 
 export default function Payments() {
   const [filters, setFilters] =
@@ -37,49 +60,119 @@ export default function Payments() {
   const [payments, setPayments] =
     useState<PaymentRowType[]>([]);
   const [loading, setLoading] = useState(false);
+  const [deletingPayment, setDeletingPayment] = useState<PaymentRowType | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const debouncedFilters = useDebounce(filters, 500);
 
-  const queryString = useMemo(() => {
-    const params = new URLSearchParams({
-      search: debouncedFilters.search,
-      method: debouncedFilters.method,
-      status: debouncedFilters.status,
-    });
+  const filteredPayments = useMemo(() => {
+    const search = debouncedFilters.search.trim().toLowerCase();
+    const method = debouncedFilters.method.trim().toLowerCase();
+    const status = debouncedFilters.status.trim().toLowerCase();
 
-    return params.toString();
-  }, [debouncedFilters]);
+    return payments.filter((payment) => {
+      const matchesSearch =
+        !search ||
+        payment.bookingId.toLowerCase().includes(search) ||
+        payment.transactionId.toLowerCase().includes(search);
+
+      const matchesMethod =
+        !method || payment.paymentMethod.toLowerCase() === method;
+
+      const matchesStatus =
+        !status || payment.paymentStatus.toLowerCase() === status;
+
+      return matchesSearch && matchesMethod && matchesStatus;
+    });
+  }, [debouncedFilters, payments]);
+
+  const formatDate = (value?: string) => {
+    if (!value) return "-";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "-";
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
+
+  const mapPaymentRow = (
+    payment: BackendPayment
+  ): PaymentRowType => ({
+    id: payment.id || "",
+    bookingId:
+      payment.bookingOrderId ||
+      payment.bookingOrder?.id ||
+      "-",
+    transactionId: payment.transactionId || "-",
+    paidAmount:
+      typeof payment.amountPaid === "number" ? payment.amountPaid : null,
+    paymentMethod: payment.paymentMethod || "-",
+    paymentStatus: payment.paymentStatus || "PENDING",
+    date: formatDate(payment.createdAt),
+  });
+
+  const fetchPayments = useCallback(async () => {
+    try {
+      setLoading(true);
+
+      const res = await apiClient.get<BackendPaymentsResponse>(
+        "/payments"
+      );
+
+      const list = Array.isArray(res.data?.data)
+        ? res.data.data
+        : Array.isArray(res.data?.payments)
+          ? res.data.payments
+          : [];
+
+      setPayments(list.map(mapPaymentRow));
+    } catch {
+      setPayments([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    const controller = new AbortController();
-
-    const fetchPayments = async () => {
-      try {
-        setLoading(true);
-        const API_BASE_URL =
-          import.meta.env.VITE_BACKEND_URL;
-
-        const res = await fetch(
-          `${API_BASE_URL}/payments?${queryString}`,
-          { signal: controller.signal }
-        );
-
-        const data = await res.json();
-        setPayments(
-          Array.isArray(data.payments)
-            ? data.payments
-            : []
-        );
-      } catch {
-        setPayments([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchPayments();
-    return () => controller.abort();
-  }, [queryString]);
+  }, [fetchPayments]);
+
+  const handleDeleteClick = (payment: PaymentRowType) => {
+    if (payment.paymentStatus !== "PENDING") {
+      toast.error("You can only delete pending payments.");
+      return;
+    }
+
+    setDeletingPayment(payment);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deletingPayment?.id) return;
+
+    try {
+      setDeleteLoading(true);
+      await apiClient.delete(`/payments/${deletingPayment.id}`);
+      toast.success("Payment deleted successfully");
+      setDeletingPayment(null);
+      await fetchPayments();
+    } catch (error: unknown) {
+      const messageFromApi =
+        typeof error === "object" &&
+        error !== null &&
+        "response" in error &&
+        typeof (error as { response?: { data?: { message?: string } } })
+          .response?.data?.message === "string"
+          ? (error as { response?: { data?: { message?: string } } }).response
+              ?.data?.message
+          : null;
+
+      toast.error(messageFromApi || "Failed to delete payment");
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
 
   return (
     <AdminLayout>
@@ -88,7 +181,7 @@ export default function Payments() {
         <PaymentStats/>
 
         <h2 className="text-lg font-semibold mb-2">
-          Showing {payments.length} payments
+          Showing {filteredPayments.length} payments
         </h2>
 
         <PaymentFilters
@@ -111,29 +204,41 @@ export default function Payments() {
             <tbody>
               {loading ? (
                 <TableCellLoader
-                  colSpan={6}
+                  colSpan={7}
                   text="Loading payments..."
                 />
-              ) : payments.length === 0 ? (
+              ) : filteredPayments.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={6}
+                    colSpan={7}
                     className="text-center py-6 text-gray-500"
                   >
                     No payments found
                   </td>
                 </tr>
               ) : (
-                payments.map((p, i) => (
+                filteredPayments.map((p, i) => (
                   <PaymentRow
-                    key={i}
+                    key={p.id || i}
                     payment={p}
+                    onDelete={handleDeleteClick}
                   />
                 ))
               )}
             </tbody>
           </table>
         </div>
+
+        {deletingPayment && (
+          <DeleteOrderModal
+            isOpen={true}
+            onClose={() => setDeletingPayment(null)}
+            onConfirm={handleConfirmDelete}
+            title="Delete Payment"
+            message={`Are you sure you want to delete payment ${deletingPayment.transactionId}? This action cannot be undone.`}
+            isLoading={deleteLoading}
+          />
+        )}
       </div>
     </AdminLayout>
   );
