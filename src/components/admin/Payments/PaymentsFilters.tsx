@@ -42,13 +42,10 @@ export function PaymentFilters({
           }
           className="bg-gray-100 px-4 py-2 rounded-lg border text-sm"
         >
-          <option value="">All Methods</option>
-          <option value="CASH">Cash</option>
-          <option value="CARD">Card</option>
-          <option value="ONLINE">Online</option>
-          <option value="BANK_TRANSFER">
-            Bank Transfer
-          </option>
+          <option value="ALL">All Methods</option>
+          <option value="STRIPE">Stripe</option>
+          <option value="EASYPAISA">Easypaisa</option>
+          <option value="JAZZCASH">JazzCash</option>
         </select>
 
         {/* 📌 Payment Status */}
@@ -59,9 +56,9 @@ export function PaymentFilters({
           }
           className="bg-gray-100 px-4 py-2 rounded-lg border text-sm"
         >
-          <option value="">All Status</option>
-          <option value="PAID">Paid</option>
+          <option value="ALL">All Status</option>
           <option value="PENDING">Pending</option>
+          <option value="SUCCESS">Paid</option>
           <option value="FAILED">Failed</option>
           <option value="REFUNDED">Refunded</option>
         </select>

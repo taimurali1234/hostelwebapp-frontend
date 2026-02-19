@@ -5,10 +5,24 @@ export interface PaymentRowType {
   bookingOrderId: string;
   transactionId: string;
   paidAmount: number | null;
-  paymentMethod: string;
-  paymentStatus: string;
+  paymentMethod: "STRIPE" | "EASYPAISA" | "JAZZCASH" | string;
+  paymentStatus: "SUCCESS" | "FAILED" | "PENDING" | "REFUNDED" | string;
   date: string;
 }
+
+const statusLabelMap: Record<string, string> = {
+  SUCCESS: "PAID",
+  FAILED: "FAILED",
+  PENDING: "PENDING",
+  REFUNDED: "REFUNDED",
+};
+
+const formatPkr = (amount: number) =>
+  new Intl.NumberFormat("en-PK", {
+    style: "currency",
+    currency: "PKR",
+    maximumFractionDigits: 0,
+  }).format(amount);
 
 export function PaymentRow({
   payment,
@@ -37,7 +51,7 @@ export function PaymentRow({
       {/* Paid Amount */}
       <td className="px-6 py-4 text-gray-600">
         {typeof payment.paidAmount === "number"
-          ? `PKR ${payment.paidAmount.toLocaleString()}`
+          ? formatPkr(payment.paidAmount)
           : "-"}
       </td>
 
@@ -54,7 +68,7 @@ export function PaymentRow({
               : "text-green-500"
           }`}
         >
-          {payment.paymentStatus}
+          {statusLabelMap[payment.paymentStatus] || payment.paymentStatus}
         </span>
       </td>
 
