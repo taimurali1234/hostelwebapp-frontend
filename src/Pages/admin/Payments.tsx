@@ -21,7 +21,7 @@ interface PaymentFiltersState {
 }
 
 const columns = [
-  "Booking ID",
+  "Order Number",
   "Transaction ID",
   "Method",
   "Paid Amount",
@@ -40,6 +40,7 @@ interface BackendPayment {
   createdAt?: string;
   bookingOrder?: {
     id?: string;
+    orderNumber?: string;
   };
 }
 
@@ -86,7 +87,7 @@ export default function Payments() {
     });
   }, [debouncedFilters, payments]);
 
-  const formatDate = (value?: string) => {
+  const formatDate = useCallback((value?: string) => {
     if (!value) return "-";
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) return "-";
@@ -95,13 +96,14 @@ export default function Payments() {
       month: "short",
       day: "numeric",
     });
-  };
+  }, []);
 
-  const mapPaymentRow = (
+  const mapPaymentRow = useCallback((
     payment: BackendPayment
   ): PaymentRowType => ({
     id: payment.id || "",
     bookingOrderId:
+      payment.bookingOrder?.orderNumber ||
       payment.bookingOrderId ||
       payment.bookingOrder?.id ||
       "-",
@@ -111,7 +113,7 @@ export default function Payments() {
     paymentMethod: payment.paymentMethod || "-",
     paymentStatus: payment.paymentStatus || "PENDING",
     date: formatDate(payment.createdAt),
-  });
+  }), [formatDate]);
 
   const fetchPayments = useCallback(async () => {
     try {
@@ -127,6 +129,7 @@ export default function Payments() {
         : Array.isArray(res.data?.payments)
           ? res.data.payments
           : [];
+          console.log("Parsed payments list:", list);
 
       setPayments(list.map(mapPaymentRow));
     } catch {
@@ -134,7 +137,7 @@ export default function Payments() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [mapPaymentRow]);
 
   useEffect(() => {
     fetchPayments();

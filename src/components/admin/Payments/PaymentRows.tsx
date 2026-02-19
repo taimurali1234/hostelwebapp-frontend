@@ -19,7 +19,7 @@ export function PaymentRow({
 }) {
   return (
     <tr className="border-b last:border-none">
-      {/* Booking ID */}
+      {/* Order Number */}
       <td className="px-6 py-4">
         {payment.bookingOrderId}
       </td>
