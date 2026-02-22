@@ -174,5 +174,25 @@
   body {
     @apply bg-background text-foreground;
   }
-}
 
+  .contact-autofill-scope input:-webkit-autofill,
+  .contact-autofill-scope input:-webkit-autofill:hover,
+  .contact-autofill-scope input:-webkit-autofill:focus,
+  .contact-autofill-scope textarea:-webkit-autofill,
+  .contact-autofill-scope textarea:-webkit-autofill:hover,
+  .contact-autofill-scope textarea:-webkit-autofill:focus {
+    -webkit-text-fill-color: #0f172a;
+    transition: background-color 99999s ease-in-out 0s;
+    box-shadow: 0 0 0 1000px #ffffff inset;
+    caret-color: #0f172a;
+  }
+
+  .auth-autofill-scope input:-webkit-autofill,
+  .auth-autofill-scope input:-webkit-autofill:hover,
+  .auth-autofill-scope input:-webkit-autofill:focus {
+    -webkit-text-fill-color: #ffffff;
+    transition: background-color 99999s ease-in-out 0s;
+    box-shadow: 0 0 0 1000px #1e293b inset;
+    caret-color: #ffffff;
+  }
+}

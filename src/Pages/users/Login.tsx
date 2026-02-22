@@ -153,7 +153,7 @@ const res = await loginService(
   
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row bg-linear-to-br from-slate-900 via-slate-800 to-slate-900 overflow-y-auto lg:overflow-hidden relative">
+    <div className="auth-autofill-scope min-h-screen flex flex-col lg:flex-row bg-linear-to-br from-slate-900 via-slate-800 to-slate-900 overflow-y-auto lg:overflow-hidden relative">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 -right-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
@@ -170,7 +170,10 @@ const res = await loginService(
           </div>
         )}
 
-        <div className="w-full max-w-md space-y-6 lg:space-y-8 animate-fade-in">
+        <form
+          onSubmit={handleLogin}
+          className="w-full max-w-md space-y-6 lg:space-y-8 animate-fade-in"
+        >
           {/* Header */}
           <div className="space-y-3">
             <h1 className="text-4xl lg:text-5xl font-bold bg-linear-to-br from-blue-400 to-purple-400 bg-clip-text text-transparent">
@@ -277,6 +280,7 @@ const res = await loginService(
               <p>{error}</p>
               {error.toLowerCase().includes("verify") && (
                 <button
+                  type="button"
                   onClick={() => {
                     setResendEmail(form.email);
                     setShowResendModal(true);
@@ -298,7 +302,7 @@ const res = await loginService(
 
           {/* Login Button */}
           <button
-            onClick={handleLogin}
+            type="submit"
             disabled={loading}
             className="w-full relative group overflow-hidden rounded-xl px-6 py-4 font-semibold text-white transition-all duration-300 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
           >
@@ -326,7 +330,7 @@ const res = await loginService(
               Sign Up
             </a>
           </div>
-        </div>
+        </form>
       </div>
 
       {/* RIGHT IMAGE */}

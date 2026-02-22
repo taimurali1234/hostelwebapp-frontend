@@ -1,4 +1,5 @@
 import { useForm } from "react-hook-form";
+import { useCallback, useEffect } from "react";
 import { User, Mail, Phone, MessageSquare } from "lucide-react";
 import Input from "@/components/common/Input";
 import { toast } from "react-toastify";
@@ -12,50 +13,105 @@ type FormData = {
   message: string;
 };
 
+const getPhoneDigits = (value: string) => value.replace(/\D/g, "").slice(0, 11);
+
+const formatPhone = (value: string) => {
+  const digits = getPhoneDigits(value);
+
+  if (digits.length <= 4) return digits;
+
+  return `${digits.slice(0, 4)}-${digits.slice(4)}`;
+};
+
+const isValidPhone = (value: string) => {
+  const digits = getPhoneDigits(value);
+  return /^03\d{9}$/.test(digits);
+};
+
 export const ContactFormSection = () => {
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
+    setValue,
   } = useForm<FormData>();
 
+  const syncAutofillValues = useCallback(() => {
+    const fields: Array<keyof FormData> = [
+      "fullName",
+      "email",
+      "phone",
+      "subject",
+      "message",
+    ];
+
+    fields.forEach((field) => {
+      const element = document.querySelector<HTMLInputElement | HTMLTextAreaElement>(
+        `[name="${field}"]`
+      );
+
+      if (element?.value) {
+        const valueToSet =
+          field === "phone" ? formatPhone(element.value) : element.value;
+
+        if (field === "phone" && valueToSet !== element.value) {
+          element.value = valueToSet;
+        }
+
+        setValue(field, valueToSet as FormData[typeof field], {
+          shouldDirty: true,
+          shouldTouch: true,
+          shouldValidate: true,
+        });
+      }
+    });
+  }, [setValue]);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      syncAutofillValues();
+    }, 250);
+
+    return () => window.clearTimeout(timer);
+  }, [syncAutofillValues]);
+
   const onSubmit = async (data: FormData) => {
-  try {
-    const res = await apiClient.post("/contact", data);
+    try {
+      const payload: FormData = {
+        ...data,
+        phone: formatPhone(data.phone),
+      };
+      const res = await apiClient.post("/contact", payload);
 
-    if (res.data?.success) {
-      toast.success("Message sent successfully! We'll contact you soon.");
-      reset();
-    } else {
-      toast.error(res.data?.message || "Failed to send message");
+      if (res.data?.success) {
+        toast.success("Message sent successfully! We'll contact you soon.");
+        reset();
+      } else {
+        toast.error(res.data?.message || "Failed to send message");
+      }
+    } catch (error: unknown) {
+      console.error("Contact error:", error);
+
+      const apiMessage =
+        typeof error === "object" &&
+        error !== null &&
+        "response" in error &&
+        typeof (error as { response?: { data?: { message?: string } } }).response
+          ?.data?.message === "string"
+          ? (error as { response?: { data?: { message?: string } } }).response?.data?.message
+          : undefined;
+
+      const nativeMessage = error instanceof Error ? error.message : undefined;
+
+      const message = apiMessage || nativeMessage || "Something went wrong";
+
+      toast.error(message);
     }
-  } catch (error: any) {
-    console.error("Contact error:", error);
-
-    const message =
-      error?.response?.data?.message ||
-      error?.message ||
-      "Something went wrong";
-
-    toast.error(message);
-  }
-};
-
-  const formatPhone = (value: string) => {
-    const digits = value.replace(/\D/g, "");
-
-    if (digits.length > 11) {
-      return `${digits.slice(0, 4)}-${digits.slice(4, 11)}`;
-    }
-
-    if (digits.length <= 4) return digits;
-
-    return `${digits.slice(0, 4)}-${digits.slice(4)}`;
   };
 
   return (
-    <section className="py-20 px-6 text-center bg-white">
+    <section className="contact-autofill-scope py-20 px-6 text-center bg-white">
       <h2 className="text-2xl md:text-4xl font-bold mb-2">
         Send Us a Message
       </h2>
@@ -68,7 +124,13 @@ export const ContactFormSection = () => {
       <div className="max-w-md mx-auto bg-white shadow-xl rounded-2xl p-6 border">
         <h3 className="font-semibold text-lg mb-4">Contact Form</h3>
 
-        <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
+        <form
+          className="space-y-4"
+          onInput={syncAutofillValues}
+          onFocusCapture={syncAutofillValues}
+          onSubmitCapture={syncAutofillValues}
+          onSubmit={handleSubmit(onSubmit)}
+        >
           {/* Full Name */}
           <label htmlFor="fullName" className="sr-only">
             Full Name
@@ -116,10 +178,9 @@ export const ContactFormSection = () => {
             inputMode="numeric"
             {...register("phone", {
               required: "Phone number is required",
-              pattern: {
-                value: /^[0-9]{4}-[0-9]{7}$/,
-                message: "Phone must be like 0306-1234567",
-              },
+              setValueAs: (value: string) => formatPhone(value ?? ""),
+              validate: (value) =>
+                isValidPhone(value) || "Phone must be like 0306-1234567",
               onChange: (e) => {
                 const formatted = formatPhone(e.target.value);
                 if (formatted !== e.target.value) {

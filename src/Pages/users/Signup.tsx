@@ -31,6 +31,24 @@ export default function Signup() {
   const [generalError, setGeneralError] = useState("");
   const [success, setSuccess] = useState("");
 
+  const getErrorMessage = (err: unknown, fallback: string): string => {
+    if (err && typeof err === "object") {
+      const backendMessage = (
+        err as { response?: { data?: { message?: unknown } } }
+      ).response?.data?.message;
+      if (typeof backendMessage === "string" && backendMessage.trim()) {
+        return backendMessage;
+      }
+
+      const message = (err as { message?: unknown }).message;
+      if (typeof message === "string" && message.trim()) {
+        return message;
+      }
+    }
+
+    return fallback;
+  };
+
   const handleChange = (key: string, value: string) => {
     setForm((prev) => ({ ...prev, [key]: value }));
   };
@@ -57,7 +75,7 @@ export default function Signup() {
             ...prev,
             address: data.display_name || "",
           }));
-        } catch (error) {
+        } catch {
           alert("Failed to fetch address");
         } finally {
           setLoadingLocation(false);
@@ -108,11 +126,8 @@ export default function Signup() {
     setTimeout(() => {
       window.location.href = "/login";
     }, 2000);
-  } catch (err: any) {
-    if (err?.errors) {
-      // backend validation errors (optional)
-      setGeneralError(err.message || "Registration failed");
-    } else if (err instanceof z.ZodError) {
+  } catch (err: unknown) {
+    if (err instanceof z.ZodError) {
       const errors: Record<string, string> = {};
       err.issues.forEach((issue) => {
         const path = issue.path[0] as string;
@@ -120,14 +135,32 @@ export default function Signup() {
       });
       setFieldErrors(errors);
     } else {
-      setGeneralError(err?.message || "An error occurred. Please try again.");
+      const backendValidationErrors = (
+        err as { response?: { data?: { errors?: Array<{ path?: string; message?: string }> } } }
+      )?.response?.data?.errors;
+
+      if (Array.isArray(backendValidationErrors) && backendValidationErrors.length > 0) {
+        const errors: Record<string, string> = {};
+        backendValidationErrors.forEach((issue) => {
+          if (issue.path && issue.message) {
+            errors[issue.path] = issue.message;
+          }
+        });
+
+        if (Object.keys(errors).length > 0) {
+          setFieldErrors(errors);
+          return;
+        }
+      }
+
+      setGeneralError(getErrorMessage(err, "Registration failed. Please try again."));
     }
   } finally {
     setLoading(false);
   }
 };
   return (
-    <div className="h-screen flex flex-col lg:flex-row bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden relative">
+    <div className="auth-autofill-scope h-screen flex flex-col lg:flex-row bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden relative">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 -right-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
@@ -148,6 +181,7 @@ export default function Signup() {
             </p>
           </div>
 
+          <form onSubmit={handleSignup}>
           {/* Form Grid */}
           <div className="grid grid-cols-1 gap-1 lg:gap-2">
             {/* Name Input */}
@@ -344,23 +378,23 @@ export default function Signup() {
 
           {/* General Error Message */}
           {generalError && (
-            <div className="px-3 py-1.5 rounded-lg bg-red-500/10 border border-red-500/50 text-red-300 text-xs">
+            <div className="mt-2 px-3 py-2 rounded-lg bg-red-500/10 border border-red-500/50 text-red-300 text-xs">
               {generalError}
             </div>
           )}
 
           {/* Success Message */}
           {success && (
-            <div className="px-3 py-1.5 rounded-lg bg-green-500/10 border border-green-500/50 text-green-300 text-xs">
+            <div className="mt-2 px-3 py-2 rounded-lg bg-green-500/10 border border-green-500/50 text-green-300 text-xs">
               {success}
             </div>
           )}
 
           {/* Signup Button */}
           <button
-            onClick={handleSignup}
+            type="submit"
             disabled={loading}
-            className="w-full relative group overflow-hidden rounded-xl px-4 py-1.5 lg:py-2 font-semibold text-white text-xs lg:text-sm transition-all duration-300 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="mt-3 w-full relative group overflow-hidden rounded-xl px-4 py-1.5 lg:py-2 font-semibold text-white text-xs lg:text-sm transition-all duration-300 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-pink-600 to-red-600 group-hover:from-purple-500 group-hover:via-pink-500 group-hover:to-red-500 transition-all duration-300"></div>
             <div className="absolute inset-0 opacity-0 group-hover:opacity-20 bg-white"></div>
@@ -378,6 +412,7 @@ export default function Signup() {
               )}
             </span>
           </button>
+          </form>
 
           {/* Divider */}
           <div className="flex items-center gap-3">
@@ -387,7 +422,7 @@ export default function Signup() {
           </div>
 
           {/* Google Sign-in Button */}
-          <button className="w-full flex items-center justify-center gap-2 px-4 py-1.5 rounded-xl border border-slate-600 text-white hover:bg-slate-800/50 transition-all duration-300 transform hover:scale-105 active:scale-95 text-xs">
+          <button type="button" className="w-full flex items-center justify-center gap-2 px-4 py-1.5 rounded-xl border border-slate-600 text-white hover:bg-slate-800/50 transition-all duration-300 transform hover:scale-105 active:scale-95 text-xs">
             <svg className="w-4 h-4" viewBox="0 0 24 24">
               <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
               <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
